@@ -1,13 +1,6 @@
 import React from "react";
 import "./App.css";
-import {
-  ThemeProvider,
-  CSSReset,
-  theme,
-  Spinner,
-  Flex,
-  Box,
-} from "@chakra-ui/core";
+import { ThemeProvider, CSSReset, theme, Flex, Box } from "@chakra-ui/core";
 import { AuthenticationProvider } from "@axa-fr/react-oidc-context";
 import { oidcConfiguration } from "resources/oidcConfiguration";
 import { NotAuthenticated as NotFound } from "pages/NotAuthenticated";
@@ -16,6 +9,7 @@ import { Switch, Route, BrowserRouter, Redirect } from "react-router-dom";
 import { Home } from "pages/Home";
 import { PageHeader } from "components/Layout/PageHeader";
 import { Login, RedirectLogin } from "pages/Login";
+import { Loading } from "pages/Loading";
 
 const customIcons = {
   logo: {
@@ -47,9 +41,9 @@ function App() {
         configuration={oidcConfiguration}
         notAuthenticated={NotAuthorized}
         notAuthorized={NotAuthorized}
-        authenticating={Spinner}
-        callbackComponentOverride={Spinner}
-        sessionLostComponent={Spinner}
+        authenticating={Loading}
+        callbackComponentOverride={Loading}
+        sessionLostComponent={Loading}
       >
         <BrowserRouter>
           <Flex direction="column" h="100vh">
