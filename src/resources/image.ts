@@ -1,4 +1,8 @@
 const base = process.env.REACT_APP_API_URL;
+export interface RequestError {
+  Err: string;
+}
+export const UnauthorizeError = { Err: "unauthorized" };
 async function request<T>(
   method: string,
   path: string,
@@ -21,8 +25,10 @@ async function request<T>(
     if (text == null || text === "") return;
     return JSON.parse(text);
   }
-  const { error } = await response.json();
-  throw Error(error);
+  if (response.status === 401) return Promise.reject(UnauthorizeError);
+  if (text == null || text === "")
+    return Promise.reject({ Err: response.statusText });
+  return Promise.reject(JSON.parse(text) as RequestError);
 }
 
 export interface IImage {
@@ -83,7 +89,13 @@ const rename = async (id: number, name: string, token: string) => {
 const replace = async (id: number, file: File, token: string) => {
   const formData = new FormData();
   formData.append("file", file);
-  return request<void>("POST", `/admin/image/${id}/replace`, formData, token);
+  return await request<void>(
+    "POST",
+    `/admin/image/${id}/replace`,
+    formData,
+    token,
+    {}
+  );
 };
 
 const _delete = async (id: number, token: string) => {
@@ -97,11 +109,14 @@ const addTag = async (id: number, tag: string, token: string) => {
 const deleteTag = async (id: number, tag: string, token: string) => {
   return request("DELETE", `/admin/image/${id}/tag/${tag}`, undefined, token);
 };
-
-const getImageLink = (image: IImage) => {
-  return `${base}/images/static/${image.fullname}`;
+const purgeCache = (id: number, token: string) => {
+  return request("POST", `/admin/image/${id}/purgeCache`, undefined, token);
 };
-
+const getPreviewLink = (image: IImage) => {
+  return `${base}/nocache/images/static/${image.fullname}`;
+};
+const getProductionLink = (image: IImage) =>
+  `${base}/images/static/${image.fullname}`;
 export const imageAPI = {
   get,
   getByID,
@@ -111,5 +126,7 @@ export const imageAPI = {
   delete: _delete,
   addTag,
   deleteTag,
-  getImageLink,
+  getPreviewLink: getPreviewLink,
+  getProductionLink,
+  purgeCache,
 };
