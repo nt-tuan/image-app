@@ -1,8 +1,18 @@
-import React from "react"
-import {Flex} from "@chakra-ui/core"
+import { useReactOidc } from "@axa-fr/react-oidc-context";
+import { Box, Button } from "@chakra-ui/core";
+import { SimpleLayout } from "components/Layout/SimpleLayout";
+import React from "react";
 
 export const NotAuthorized = () => {
-    return <Flex>
-        401 Not Authorized
-    </Flex>
-}
+  const { login } = useReactOidc();
+  return (
+    <SimpleLayout
+      title="401"
+      info={<Box fontSize="lg">Unauthorize access</Box>}
+    >
+      <Button variantColor="blue" onClick={() => login()}>
+        Đăng nhập
+      </Button>
+    </SimpleLayout>
+  );
+};

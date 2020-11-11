@@ -54,7 +54,7 @@ export const ImageUploader = (props: IImageUploader) => {
           var newImage = await imageAPI.upload(
             normalizeFolder + fileData.name,
             fileData.file,
-            oidcUser.id_token
+            oidcUser.access_token
           );
           props.onAdded(newImage);
           await sleep(4000);
