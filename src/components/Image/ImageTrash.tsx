@@ -6,6 +6,7 @@ import { useReactOidc } from "@axa-fr/react-oidc-context";
 import { imageAPI, RequestError, UnauthorizeError } from "resources/api";
 import { ImageList } from "./ImageList";
 import { ImageSearch } from "./ImageSearch";
+import { DeletedImageDetail } from "./DeletedImageDetail";
 export const Trash = () => {
   const { oidcUser } = useReactOidc();
   const [selected, setSelected] = React.useState<ImageHistory>();
@@ -26,6 +27,17 @@ export const Trash = () => {
     const foundImages = images?.filter((image) => image.id === id);
     if (foundImages == null || foundImages.length === 0) return;
     setSelected(foundImages[0]);
+  };
+  const handleRestore = () => {
+    if (selected == null) return;
+    imageAPI
+      .restoreDeletedImage(selected.id, oidcUser.access_token)
+      .then(() => {
+        setSelected(undefined);
+        setImages((images) =>
+          images?.filter((image) => image.id !== selected.id)
+        );
+      });
   };
   if (unauthorized) return <Redirect to={"/401"} />;
   return (
@@ -71,7 +83,13 @@ export const Trash = () => {
           flexBasis={{ base: "100%", md: 450 }}
           flexShrink={0}
           boxShadow="lg"
-        ></Box>
+        >
+          <DeletedImageDetail
+            onRestore={handleRestore}
+            onClose={() => setSelected(undefined)}
+            image={selected}
+          />
+        </Box>
       )}
     </Flex>
   );

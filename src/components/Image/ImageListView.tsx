@@ -1,8 +1,18 @@
-import { Box, Flex, Spacer, StackDivider, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Spacer,
+  StackDivider,
+  VStack,
+  Icon,
+  HStack,
+} from "@chakra-ui/react";
 import React from "react";
+import { MdAccessTime, MdAccountCircle, MdHelpOutline } from "react-icons/md";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { ImageListItemProps } from "./ImageList";
 import { ImageTags } from "./ImageTags";
+import moment from "moment";
 interface Props {
   images: ImageListItemProps[];
   onSelect: (image: ImageListItemProps) => void;
@@ -55,8 +65,21 @@ export const ImageListView = ({ images, onSelect }: Props) => (
             <ImageTags tags={image.tags} />
           </Flex>
           <Box fontSize="sm" color="gray.400">
-            {/* {image.at} - {image.by} */}
-            --
+            <HStack>
+              {image.by && (
+                <span>
+                  <Icon as={MdAccountCircle} />
+                  {image.by}
+                </span>
+              )}
+              {image.at && (
+                <span>
+                  <Icon as={MdAccessTime} />
+                  {moment(image.at).format("llll")}
+                </span>
+              )}
+              {!image.at && !image.by && <Icon as={MdHelpOutline} />}
+            </HStack>
           </Box>
         </Flex>
       </Flex>

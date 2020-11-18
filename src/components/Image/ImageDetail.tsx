@@ -3,7 +3,7 @@ import { imageAPI } from "resources/api";
 import { IImage } from "resources/models";
 import { FileDrop } from "react-file-drop";
 import { MdEdit, MdClose, MdContentCopy } from "react-icons/md";
-import { ImageHistories } from "components/ImageHome/ImageHistories";
+import { ImageHistories } from "components/Image/ImageHistories";
 import {
   Box,
   Flex,

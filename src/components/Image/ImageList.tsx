@@ -108,20 +108,22 @@ export const ImageList = ({ images, total, onSelect }: Props) => {
             <SortBySelect value={sortBy} onChange={setSortBy} />
           </HStack>
           <StackDivider borderColor="gray.200" />
-          <IconButton
-            colorScheme={viewMode === "list" ? "blue" : "gray"}
-            variant="ghost"
-            icon={<MdViewList />}
-            aria-label="list"
-            onClick={() => setViewMode("list")}
-          />
-          <IconButton
-            colorScheme={viewMode === "grid" ? "blue" : "gray"}
-            variant="ghost"
-            icon={<MdViewModule />}
-            aria-label="grid"
-            onClick={() => setViewMode("grid")}
-          />
+          <HStack spacing={0}>
+            <IconButton
+              colorScheme={viewMode === "list" ? "blue" : "gray"}
+              variant="ghost"
+              icon={<MdViewList />}
+              aria-label="list"
+              onClick={() => setViewMode("list")}
+            />
+            <IconButton
+              colorScheme={viewMode === "grid" ? "blue" : "gray"}
+              variant="ghost"
+              icon={<MdViewModule />}
+              aria-label="grid"
+              onClick={() => setViewMode("grid")}
+            />
+          </HStack>
         </HStack>
       </Flex>
     </Flex>

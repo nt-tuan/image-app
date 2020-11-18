@@ -15,4 +15,5 @@ export interface ImageHistory {
   backupFullname?: string;
   actionType: ActionType;
   by?: string;
+  fileID: number;
 }
