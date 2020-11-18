@@ -1,5 +1,5 @@
 import { useReactOidc, withOidcSecure } from "@axa-fr/react-oidc-context";
-import { Trash } from "components/ImageHome/ImageTrash";
+import { Trash } from "components/Image/ImageTrash";
 import React from "react";
 import { Redirect } from "react-router-dom";
 

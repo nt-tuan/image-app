@@ -1,5 +1,5 @@
 import { useReactOidc, withOidcSecure } from "@axa-fr/react-oidc-context";
-import { ImageHome } from "components/ImageHome/ImageAdmin";
+import { ImageHome } from "components/Image/ImageAdmin";
 import React from "react";
 import { Redirect } from "react-router-dom";
 
