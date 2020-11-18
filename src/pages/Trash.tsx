@@ -1,9 +1,9 @@
 import { useReactOidc, withOidcSecure } from "@axa-fr/react-oidc-context";
-import { ImageHome } from "components/ImageHome/ImageAdmin";
+import { Trash } from "components/ImageHome/ImageTrash";
 import React from "react";
 import { Redirect } from "react-router-dom";
 
-const SecureHome = () => {
+const SecureTrash = () => {
   const { oidcUser } = useReactOidc();
   const roles: string[] = oidcUser.profile.roles;
   console.log(roles);
@@ -13,6 +13,6 @@ const SecureHome = () => {
     roles.filter((role) => role === "image.read").length === 0
   )
     return <Redirect to="/401" />;
-  return <ImageHome />;
+  return <Trash />;
 };
-export const Home = withOidcSecure(SecureHome);
+export const TrashPage = withOidcSecure(SecureTrash);

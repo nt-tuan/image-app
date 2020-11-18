@@ -1,4 +1,4 @@
-import { Spinner } from "@chakra-ui/core";
+import { Spinner } from "@chakra-ui/react";
 import { SimpleLayout } from "components/Layout/SimpleLayout";
 import React from "react";
 

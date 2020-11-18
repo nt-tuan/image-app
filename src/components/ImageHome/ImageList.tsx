@@ -1,87 +1,129 @@
 import React from "react";
-import { imageAPI } from "resources/image";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import { ImageContext } from ".";
-import { Box, Flex, SimpleGrid, Spinner, Tag } from "@chakra-ui/core";
-
-export const ImageList = () => {
-  const { filtered, setSelected } = React.useContext(ImageContext);
-  if (filtered == null) {
+import {
+  Box,
+  Center,
+  Flex,
+  HStack,
+  IconButton,
+  Select,
+  Spinner,
+  StackDivider,
+} from "@chakra-ui/react";
+import {
+  MdViewList,
+  MdViewModule,
+  MdArrowUpward,
+  MdArrowDownward,
+  MdSort,
+} from "react-icons/md";
+import { ImagesGridView } from "./ImageGridView";
+import { ImageListView } from "./ImageListView";
+import {
+  atComparer,
+  fullnameComparer,
+  SortDirection,
+  sortImages,
+} from "./ImageSorter";
+export interface ImageListItemProps {
+  id: number;
+  fullname: string;
+  href: string;
+  by?: string;
+  at?: string;
+  tags: string[];
+}
+interface Props {
+  images?: ImageListItemProps[];
+  total: number;
+  onSelect: (image: ImageListItemProps) => void;
+}
+type SortOptionValue = "filename" | "at";
+export const SortBySelect = ({
+  value,
+  onChange,
+}: {
+  value: SortOptionValue;
+  onChange: (value: SortOptionValue) => void;
+}) => (
+  <Select
+    icon={<MdSort />}
+    value={value}
+    variant="flushed"
+    onChange={(event) => onChange(event.target.value as SortOptionValue)}
+  >
+    <option value="filename">Theo đường dẫn</option>
+    <option value="at">Theo ngày tạo</option>
+  </Select>
+);
+export const ImageList = ({ images, total, onSelect }: Props) => {
+  const [viewMode, setViewMode] = React.useState<"grid" | "list">("list");
+  const [sortDirection, setSortDirection] = React.useState<SortDirection>(
+    "asc"
+  );
+  const [sortBy, setSortBy] = React.useState<SortOptionValue>("filename");
+  const translateImages = React.useMemo(() => {
+    if (images == null) return undefined;
+    const comparer = sortBy === "at" ? atComparer : fullnameComparer;
+    return sortImages<ImageListItemProps>(images, sortDirection, comparer);
+  }, [images, sortBy, sortDirection]);
+  if (translateImages == null) {
     return (
       <Flex w="100%" direction="column" alignItems="center">
         <Spinner color="blue.500" />
       </Flex>
     );
   }
-  if (filtered.length === 0)
-    return (
-      <div className="flex w-full inline-block text-center h-64">
-        <span className="my-auto mx-auto">Không có hình ảnh nào</span>
-      </div>
-    );
   return (
-    <SimpleGrid minChildWidth="300px" spacing={10}>
-      {filtered.map((image) => (
-        <Flex h={200} key={image.id} direction="column">
-          <Flex
-            direction="column"
-            cursor="pointer"
-            key={image.id}
-            flexGrow={1}
-            border="1px"
-            borderRadius="md"
-            borderColor="gray.500"
-            overflow="hidden"
-          >
-            <Box flexGrow={1} position="relative" w="100%">
-              <Box position="absolute" top={0} bottom={0} right={0} left={0}>
-                <LazyLoadImage
-                  key={image.id + image.time.getTime()}
-                  style={{
-                    objectFit: "cover",
-                    width: "100%",
-                    height: "100%",
-                  }}
-                  effect="blur"
-                  width="100%"
-                  height="100%"
-                  src={imageAPI.getPreviewLink(image)}
-                  onClick={() =>
-                    setSelected && setSelected({ ...image, mode: "view" })
-                  }
-                  alt={`${image.fullname} ${image.tags.join(",")}`}
-                />
-              </Box>
-              <Box
-                position="absolute"
-                p={1}
-                top={0}
-                left={0}
-                right={0}
-                overflow="hidden"
-              >
-                <Flex direction="row" flexWrap="wrap">
-                  {image.tags.map((tag) => (
-                    <Tag
-                      key={tag}
-                      size="sm"
-                      mr="1"
-                      opacity={0.7}
-                      mb={1}
-                      isTruncated
-                    >
-                      {tag}
-                    </Tag>
-                  ))}
-                </Flex>
-              </Box>
-            </Box>
-          </Flex>
-          <Box isTruncated fontSize="sm" pr={2}>
-            {image.fullname}
-          </Box>
-        </Flex>
-      ))}
-    </SimpleGrid>
+    <Flex direction="column" h="100%">
+      <Box flex={1} overflowY="auto">
+        {translateImages.length === 0 && <Center>Không có hình ảnh nào</Center>}
+        {translateImages.length !== 0 && viewMode === "grid" && (
+          <ImagesGridView images={translateImages} onSelect={onSelect} />
+        )}
+        {translateImages.length !== 0 && viewMode === "list" && (
+          <ImageListView images={translateImages} onSelect={onSelect} />
+        )}
+      </Box>
+      <Flex color="gray" fontSize="sm" direction="row" alignItems="center">
+        <Box flex={1}>
+          Có {translateImages.length}/{total} hình ảnh được hiển thị
+        </Box>
+        <HStack>
+          <HStack spacing={0}>
+            <IconButton
+              icon={
+                sortDirection === "asc" ? (
+                  <MdArrowUpward />
+                ) : (
+                  <MdArrowDownward />
+                )
+              }
+              aria-label="sort direction"
+              onClick={() =>
+                setSortDirection((current) =>
+                  current === "asc" ? "desc" : "asc"
+                )
+              }
+            />
+            <SortBySelect value={sortBy} onChange={setSortBy} />
+          </HStack>
+          <StackDivider borderColor="gray.200" />
+          <IconButton
+            colorScheme={viewMode === "list" ? "blue" : "gray"}
+            variant="ghost"
+            icon={<MdViewList />}
+            aria-label="list"
+            onClick={() => setViewMode("list")}
+          />
+          <IconButton
+            colorScheme={viewMode === "grid" ? "blue" : "gray"}
+            variant="ghost"
+            icon={<MdViewModule />}
+            aria-label="grid"
+            onClick={() => setViewMode("grid")}
+          />
+        </HStack>
+      </Flex>
+    </Flex>
   );
 };

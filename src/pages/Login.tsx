@@ -1,5 +1,5 @@
 import { useReactOidc } from "@axa-fr/react-oidc-context";
-import { Button } from "@chakra-ui/core";
+import { Button } from "@chakra-ui/react";
 import { SimpleLayout } from "components/Layout/SimpleLayout";
 import React from "react";
 import { Redirect } from "react-router-dom";

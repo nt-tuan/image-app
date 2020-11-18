@@ -1,5 +1,6 @@
 import * as React from "react";
 import { FileDrop } from "react-file-drop";
+import { MdDelete, MdClose } from "react-icons/md";
 import {
   Box,
   Button,
@@ -10,7 +11,7 @@ import {
   Image,
   Spinner,
   Tag,
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 export interface IFilePreivew {
   data: string;
   name: string;
@@ -83,7 +84,7 @@ export const FileInput = ({
           <Button
             size="sm"
             variant="ghost"
-            leftIcon="delete"
+            leftIcon={<MdDelete />}
             onClick={handleClear}
           >
             Clear
@@ -142,7 +143,7 @@ export const FileInput = ({
                   <IconButton
                     size="sm"
                     aria-label="close"
-                    icon="close"
+                    icon={<MdClose />}
                     onClick={() => removeImage(image)}
                   />
                 </Box>
