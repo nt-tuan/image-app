@@ -131,7 +131,6 @@ const useSearchImage = <T extends SearchItem>(
         ).length >= tags.length
       );
     });
-    console.log("set filtered", new Date());
     onFiltered(filtered);
     return { searchPattern };
   });
