@@ -11,7 +11,9 @@ import { PageHeader } from "components/Layout/PageHeader";
 import { Login, RedirectLogin } from "pages/Login";
 import { Loading } from "pages/Loading";
 import { TrashPage } from "pages/Trash";
-
+import Moment from "react-moment";
+import "moment/locale/vi";
+Moment.globalLocale = "vi";
 function App() {
   return (
     <ChakraProvider>

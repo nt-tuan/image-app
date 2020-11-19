@@ -21,6 +21,7 @@ import { ImageListView } from "./ImageListView";
 import {
   atComparer,
   fullnameComparer,
+  getNumberComparer,
   SortDirection,
   sortImages,
 } from "./ImageSorter";
@@ -30,19 +31,39 @@ export interface ImageListItemProps {
   href: string;
   by?: string;
   at?: string;
+  width?: number;
+  height?: number;
+  diskSize?: number;
   tags: string[];
 }
 interface Props {
   images?: ImageListItemProps[];
   total: number;
   onSelect: (image: ImageListItemProps) => void;
+  sortByOptions?: SortOptionValue[];
 }
-type SortOptionValue = "filename" | "at";
+type SortOptionValue = "filename" | "at" | "width" | "height" | "diskSize";
+const optionText = {
+  filename: "Theo đường dẫn",
+  at: "Theo ngày tạo",
+  width: "Theo chiều rộng",
+  height: "Theo chiều cao",
+  diskSize: "Theo dung lượng lưu trữ",
+};
+const comparer = {
+  filename: fullnameComparer,
+  at: atComparer,
+  width: getNumberComparer("width"),
+  height: getNumberComparer("height"),
+  diskSize: getNumberComparer("diskSize"),
+};
 export const SortBySelect = ({
   value,
+  options,
   onChange,
 }: {
   value: SortOptionValue;
+  options: SortOptionValue[];
   onChange: (value: SortOptionValue) => void;
 }) => (
   <Select
@@ -51,11 +72,19 @@ export const SortBySelect = ({
     variant="flushed"
     onChange={(event) => onChange(event.target.value as SortOptionValue)}
   >
-    <option value="filename">Theo đường dẫn</option>
-    <option value="at">Theo ngày tạo</option>
+    {options.map((op) => (
+      <option key={op} value={op}>
+        {optionText[op]}
+      </option>
+    ))}
   </Select>
 );
-export const ImageList = ({ images, total, onSelect }: Props) => {
+export const ImageList = ({
+  images,
+  total,
+  onSelect,
+  sortByOptions,
+}: Props) => {
   const [viewMode, setViewMode] = React.useState<"grid" | "list">("list");
   const [sortDirection, setSortDirection] = React.useState<SortDirection>(
     "asc"
@@ -63,8 +92,11 @@ export const ImageList = ({ images, total, onSelect }: Props) => {
   const [sortBy, setSortBy] = React.useState<SortOptionValue>("filename");
   const translateImages = React.useMemo(() => {
     if (images == null) return undefined;
-    const comparer = sortBy === "at" ? atComparer : fullnameComparer;
-    return sortImages<ImageListItemProps>(images, sortDirection, comparer);
+    return sortImages<ImageListItemProps>(
+      images,
+      sortDirection,
+      comparer[sortBy]
+    );
   }, [images, sortBy, sortDirection]);
   if (translateImages == null) {
     return (
@@ -105,7 +137,19 @@ export const ImageList = ({ images, total, onSelect }: Props) => {
                 )
               }
             />
-            <SortBySelect value={sortBy} onChange={setSortBy} />
+            <SortBySelect
+              options={
+                sortByOptions ?? [
+                  "filename",
+                  "at",
+                  "width",
+                  "height",
+                  "diskSize",
+                ]
+              }
+              value={sortBy}
+              onChange={setSortBy}
+            />
           </HStack>
           <StackDivider borderColor="gray.200" />
           <HStack spacing={0}>

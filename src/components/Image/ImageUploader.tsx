@@ -4,7 +4,7 @@ import {
   FileState,
   IFilePreivew,
 } from "components/Image/ImageInput";
-import { IImage } from "resources/models";
+import { ImageInfo } from "resources/models";
 import { imageAPI } from "resources/api";
 import { MdClose, MdCheck } from "react-icons/md";
 import {
@@ -20,7 +20,7 @@ import {
 import { useReactOidc } from "@axa-fr/react-oidc-context";
 interface IImageUploader {
   onClose: () => void;
-  onAdded: (image: IImage) => void;
+  onAdded: (image: ImageInfo) => void;
 }
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));

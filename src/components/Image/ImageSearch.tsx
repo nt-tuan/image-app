@@ -18,7 +18,7 @@ interface SearchItem {
   tags?: string[];
 }
 export interface ImageSearchProps<T extends SearchItem> {
-  filteredTags: Set<string>;
+  filteredTags?: Set<string>;
   onAddFilteredTags?: (tags: string[]) => void;
   images?: T[];
   onFiltered: (images: T[]) => void;
@@ -50,6 +50,7 @@ export const ImageSearch = <T extends SearchItem>({
     [onAddFilteredTags]
   );
   const tags = React.useMemo(() => {
+    if (filteredTags == null) return [];
     return Array.from(filteredTags);
   }, [filteredTags]);
 
@@ -130,6 +131,7 @@ const useSearchImage = <T extends SearchItem>(
         ).length >= tags.length
       );
     });
+    console.log("set filtered", new Date());
     onFiltered(filtered);
     return { searchPattern };
   });

@@ -1,4 +1,4 @@
-import { IImage, ImageHistory } from "resources/models";
+import { ImageInfo, ImageHistory } from "resources/models";
 const base = process.env.REACT_APP_API_URL;
 export interface RequestError {
   Err: string;
@@ -34,7 +34,7 @@ async function request<T>(
 
 const get = async (token: string) => {
   const url = `/admin/images?pageSize=999999&pageCurrent=0&orderBy=id`;
-  var res = await request<IImage[]>("GET", url, undefined, token);
+  var res = await request<ImageInfo[]>("GET", url, undefined, token);
   if (res == null) {
     return Promise.reject("invalid-data");
   }
@@ -44,7 +44,7 @@ const get = async (token: string) => {
 
 const getByID = async (id: number, token: string) => {
   const url = `/admin/image/${id}`;
-  var image = await request<IImage>("GET", url, undefined, token);
+  var image = await request<ImageInfo>("GET", url, undefined, token);
   if (image === undefined) {
     return Promise.reject("invalid-data");
   }
@@ -55,7 +55,7 @@ const upload = async (name: string, data: File, token: string) => {
   const formData = new FormData();
   formData.append("file", data);
   formData.append("name", name);
-  const image = await request<IImage>(
+  const image = await request<ImageInfo>(
     "POST",
     `/admin/image`,
     formData,
@@ -104,14 +104,14 @@ const deleteTag = async (id: number, tag: string, token: string) => {
 const purgeCache = (id: number, token: string) => {
   return request("POST", `/admin/image/${id}/purgeCache`, undefined, token);
 };
-const getPreviewLink = (image: IImage) => {
+const getPreviewLink = (image: ImageInfo) => {
   return `${base}/nocache/images/static/${image.fullname}`;
 };
-const getProductionLink = (image: IImage) =>
+const getProductionLink = (image: ImageInfo) =>
   `${base}/images/static/${image.fullname}`;
-const getResizedLink = (image: IImage, w: number, h: number) =>
+const getResizedLink = (image: ImageInfo, w: number, h: number) =>
   `${base}/images/size/${w}/${h}/${image.fullname}`;
-const getWebpResizedLink = (image: IImage, w: number, h: number) =>
+const getWebpResizedLink = (image: ImageInfo, w: number, h: number) =>
   `${base}/images/webp/${w}/${h}/${image.fullname}`;
 const getImageHistories = (id: number, token: string) =>
   request<ImageHistory[]>(
@@ -123,7 +123,7 @@ const getImageHistories = (id: number, token: string) =>
 const getDeletedImages = (token: string) =>
   request<ImageHistory[]>("GET", "/admin/deletedImages", undefined, token);
 const restoreDeletedImage = (id: number, token: string) =>
-  request<IImage>(
+  request<ImageInfo>(
     "POST",
     `/admin/deletedImage/${id}/restore`,
     undefined,

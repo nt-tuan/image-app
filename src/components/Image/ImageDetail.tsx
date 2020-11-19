@@ -1,6 +1,6 @@
 import React from "react";
 import { imageAPI } from "resources/api";
-import { IImage } from "resources/models";
+import { ImageInfo } from "resources/models";
 import { FileDrop } from "react-file-drop";
 import { MdEdit, MdClose, MdContentCopy } from "react-icons/md";
 import { ImageHistories } from "components/Image/ImageHistories";
@@ -25,11 +25,11 @@ import {
 import { ImageFullscreenButton } from "./ImageFullscreenButton";
 
 export interface IImageEditor {
-  image: IImage;
+  image: ImageInfo;
   onClose: () => void;
   onEdit: () => void;
 }
-const ResizePath = ({ image }: { image: IImage }) => {
+const ResizePath = ({ image }: { image: ImageInfo }) => {
   const [size, setSize] = React.useState<{ w: number; h: number }>({
     w: 0,
     h: 0,

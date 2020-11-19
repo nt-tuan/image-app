@@ -1,5 +1,9 @@
 export type SortDirection = "asc" | "desc";
 
+export const getNumberComparer = (field: string) => (a: any, b: any) =>
+  ((a[field] as number | undefined) ?? 0) -
+  ((b[field] as number | undefined) ?? 0);
+
 export const fullnameComparer = (
   a: { fullname: string },
   b: { fullname: string }

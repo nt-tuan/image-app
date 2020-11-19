@@ -13,6 +13,15 @@ export const Trash = () => {
   const [images, setImages] = React.useState<ImageHistory[]>();
   const [filtered, setFiltered] = React.useState<ImageHistory[]>();
   const [unauthorized, setUnauthorized] = React.useState(false);
+  const imageListProps = React.useMemo(
+    () =>
+      filtered?.map((image) => ({
+        ...image,
+        tags: [],
+        href: imageAPI.getDeletedImageURL(image.backupFullname),
+      })),
+    [filtered]
+  );
   React.useEffect(() => {
     imageAPI
       .getDeletedImages(oidcUser.access_token)
@@ -39,6 +48,7 @@ export const Trash = () => {
         );
       });
   };
+  const handleClose = () => setSelected(undefined);
   if (unauthorized) return <Redirect to={"/401"} />;
   return (
     <Flex h="100%" direction="row">
@@ -51,11 +61,7 @@ export const Trash = () => {
         pt={6}
         flexGrow={1}
       >
-        <ImageSearch
-          filteredTags={new Set()}
-          images={images}
-          onFiltered={setFiltered}
-        />
+        <ImageSearch images={images} onFiltered={setFiltered} />
         <Flex alignItems="baseline" direction="row">
           <Flex flexGrow={1}>
             <Heading size="lg">Danh sách hình ảnh đã xóa</Heading>
@@ -63,11 +69,8 @@ export const Trash = () => {
         </Flex>
         <Box flex={1} overflow="hidden">
           <ImageList
-            images={filtered?.map((image) => ({
-              ...image,
-              tags: [],
-              href: imageAPI.getDeletedImageURL(image.backupFullname),
-            }))}
+            sortByOptions={["filename", "at"]}
+            images={imageListProps}
             total={images?.length ?? 0}
             onSelect={(img) => handleSelect(img.id)}
           />
@@ -86,7 +89,7 @@ export const Trash = () => {
         >
           <DeletedImageDetail
             onRestore={handleRestore}
-            onClose={() => setSelected(undefined)}
+            onClose={handleClose}
             image={selected}
           />
         </Box>

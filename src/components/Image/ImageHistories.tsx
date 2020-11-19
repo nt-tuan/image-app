@@ -1,6 +1,8 @@
 import {
   Box,
   Heading,
+  HStack,
+  Icon,
   List,
   ListIcon,
   ListItem,
@@ -12,14 +14,15 @@ import {
   MdSwapHoriz,
   MdRestore,
   MdTextFields,
+  MdTimelapse,
+  MdAccountCircle,
 } from "react-icons/md";
 import React from "react";
 import { ImageHistory } from "resources/models";
-import moment from "moment";
 import { imageAPI } from "resources/api";
 import { useReactOidc } from "@axa-fr/react-oidc-context";
-import "moment/locale/vi";
-moment.locale("vi");
+import Moment from "react-moment";
+
 interface Props {
   histories: ImageHistory[];
 }
@@ -57,16 +60,25 @@ const ImageHistoryItem = ({ history }: { history: ImageHistory }) => {
     );
   return <></>;
 };
-
 const ImageHistoriesView = (props: Props) => {
   return (
     <List spacing={3}>
       {props.histories.map((h) => (
         <ListItem key={h.id}>
           <ImageHistoryItem history={h} />
-          <Box fontSize="sm" color="gray.400">
-            {moment(h.at).format("lll")} {h.by ? ` - ${h.by}` : null}
-          </Box>
+          <HStack spacing={3} fontSize="sm" color="gray.400">
+            {h.by && (
+              <HStack spacing={1}>
+                <Icon as={MdAccountCircle} />
+                <Box>{h.by}</Box>
+              </HStack>
+            )}
+            {h.at && (
+              <HStack spacing={1}>
+                <Icon as={MdTimelapse} /> <Moment fromNow>{h.at}</Moment>
+              </HStack>
+            )}
+          </HStack>
         </ListItem>
       ))}
     </List>
@@ -82,6 +94,7 @@ export const ImageHistories = ({ id }: { id: number }) => {
       .then(setHistories)
       .catch();
   }, [id, oidcUser]);
+
   return (
     <>
       <Heading size="lg" pb={6}>

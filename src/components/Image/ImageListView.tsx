@@ -8,11 +8,17 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import React from "react";
-import { MdAccessTime, MdAccountCircle, MdHelpOutline } from "react-icons/md";
+import {
+  MdAccessTime,
+  MdAccountCircle,
+  MdHelpOutline,
+  MdPhotoSizeSelectActual,
+  MdStorage,
+} from "react-icons/md";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { ImageListItemProps } from "./ImageList";
 import { ImageTags } from "./ImageTags";
-import moment from "moment";
+import Moment from "react-moment";
 interface Props {
   images: ImageListItemProps[];
   onSelect: (image: ImageListItemProps) => void;
@@ -65,18 +71,32 @@ export const ImageListView = ({ images, onSelect }: Props) => (
             <ImageTags tags={image.tags} />
           </Flex>
           <Box fontSize="sm" color="gray.400">
-            <HStack>
+            <HStack spacing={3}>
+              {image.width && image.height && (
+                <HStack spacing={1}>
+                  <Icon as={MdPhotoSizeSelectActual} />
+                  <Box>
+                    {image.width} &times; {image.height}
+                  </Box>
+                </HStack>
+              )}
+              {image.diskSize && (
+                <HStack spacing={1}>
+                  <Icon as={MdStorage} />
+                  <Box>{image.diskSize}</Box>
+                </HStack>
+              )}
               {image.by && (
-                <span>
+                <HStack spacing={1}>
                   <Icon as={MdAccountCircle} />
-                  {image.by}
-                </span>
+                  <Box>{image.by}</Box>
+                </HStack>
               )}
               {image.at && (
-                <span>
+                <HStack spacing={1}>
                   <Icon as={MdAccessTime} />
-                  {moment(image.at).format("llll")}
-                </span>
+                  <Moment fromNow>{image.at}</Moment>
+                </HStack>
               )}
               {!image.at && !image.by && <Icon as={MdHelpOutline} />}
             </HStack>

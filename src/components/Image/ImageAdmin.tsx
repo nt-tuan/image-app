@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ImageUploader } from "./ImageUploader";
 import { imageAPI, RequestError, UnauthorizeError } from "resources/api";
-import { IImage } from "resources/models";
+import { ImageInfo } from "resources/models";
 import { ImageSearch } from "./ImageSearch";
 import { ImageList } from "./ImageList";
 import { ImageEditor } from "./ImageEditor";
@@ -17,9 +17,9 @@ export const ImageContext = React.createContext<{
   tags: Set<string>;
   selectedTags: Set<string>;
   setSelectedTags: React.Dispatch<React.SetStateAction<Set<string>>>;
-  images?: IImage[];
-  filtered?: IImage[];
-  setFiltered?: React.Dispatch<React.SetStateAction<IImage[] | undefined>>;
+  images?: ImageInfo[];
+  filtered?: ImageInfo[];
+  setFiltered?: React.Dispatch<React.SetStateAction<ImageInfo[] | undefined>>;
   setSelected: React.Dispatch<React.SetStateAction<EditableImage | undefined>>;
 }>({
   tags: new Set(),
@@ -28,15 +28,15 @@ export const ImageContext = React.createContext<{
   setSelected: () => {},
 });
 
-export interface EditableImage extends IImage {
+export interface EditableImage extends ImageInfo {
   mode: "view" | "edit";
 }
 
 export const ImageHome = () => {
   const { oidcUser } = useReactOidc();
   const [selected, setSelected] = React.useState<EditableImage>();
-  const [images, setImages] = React.useState<IImage[]>();
-  const [filtered, setFiltered] = React.useState<IImage[]>();
+  const [images, setImages] = React.useState<ImageInfo[]>();
+  const [filtered, setFiltered] = React.useState<ImageInfo[]>();
   const [tags, setTags] = React.useState<Set<string>>(new Set());
   const [selectedTags, setSelectedTags] = React.useState<Set<string>>(
     new Set()
@@ -71,6 +71,9 @@ export const ImageHome = () => {
       time: new Date(),
       mode: "view",
       link: "",
+      height: 0,
+      width: 0,
+      diskSize: 0,
     } as EditableImage);
   };
   const handleCloseAdd = () => {
@@ -107,7 +110,7 @@ export const ImageHome = () => {
       });
     });
   };
-  const handleAdded = (image: IImage) => {
+  const handleAdded = (image: ImageInfo) => {
     const newImages = [...(images ?? []), image];
     setImages(newImages);
   };

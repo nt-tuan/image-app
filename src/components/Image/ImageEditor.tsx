@@ -1,6 +1,6 @@
 import React from "react";
 import { imageAPI } from "resources/api";
-import { IImage } from "resources/models";
+import { ImageInfo } from "resources/models";
 import { SelectTags } from "./Select";
 import { ImageContext } from "./ImageAdmin";
 import { FileDrop } from "react-file-drop";
@@ -35,7 +35,7 @@ import { MdDelete, MdClose } from "react-icons/md";
 import { useReactOidc } from "@axa-fr/react-oidc-context";
 import ReactCompareImage from "react-compare-image";
 export interface IImageEditor {
-  image: IImage;
+  image: ImageInfo;
   onClose: () => void;
   onChange: () => void;
   onDelete: () => void;
@@ -94,7 +94,7 @@ const ReplaceCofirm = ({
   onClose,
   onConfirm,
 }: {
-  image: IImage;
+  image: ImageInfo;
   file?: File;
   onClose: () => void;
   onConfirm: () => void;

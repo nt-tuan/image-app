@@ -6,7 +6,6 @@ import { Redirect } from "react-router-dom";
 const SecureTrash = () => {
   const { oidcUser } = useReactOidc();
   const roles: string[] = oidcUser.profile.roles;
-  console.log(roles);
   if (
     oidcUser.profile == null ||
     roles == null ||
