@@ -3,8 +3,10 @@ import {
   FileInput,
   FileState,
   IFilePreivew,
-} from "components/ImageHome/ImageInput";
-import { imageAPI, IImage } from "resources/image";
+} from "components/Image/ImageInput";
+import { ImageInfo } from "resources/models";
+import { imageAPI } from "resources/api";
+import { MdClose, MdCheck } from "react-icons/md";
 import {
   Box,
   Button,
@@ -14,11 +16,11 @@ import {
   Heading,
   IconButton,
   Input,
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 import { useReactOidc } from "@axa-fr/react-oidc-context";
 interface IImageUploader {
   onClose: () => void;
-  onAdded: (image: IImage) => void;
+  onAdded: (image: ImageInfo) => void;
 }
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -76,7 +78,7 @@ export const ImageUploader = (props: IImageUploader) => {
           <Heading size="lg">Upload</Heading>
         </Box>
         <IconButton
-          icon="close"
+          icon={<MdClose />}
           aria-label="Close"
           variant="ghost"
           onClick={props.onClose}
@@ -93,7 +95,7 @@ export const ImageUploader = (props: IImageUploader) => {
           previewImages={fileDatas}
         />
       </Box>
-      <Button leftIcon="check" onClick={handleSave}>
+      <Button leftIcon={<MdCheck />} onClick={handleSave}>
         Lưu
       </Button>
     </Flex>

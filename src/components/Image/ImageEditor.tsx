@@ -1,7 +1,8 @@
 import React from "react";
-import { IImage, imageAPI } from "resources/image";
+import { imageAPI } from "resources/api";
+import { ImageInfo } from "resources/models";
 import { SelectTags } from "./Select";
-import { ImageContext } from ".";
+import { ImageContext } from "./ImageAdmin";
 import { FileDrop } from "react-file-drop";
 import {
   Box,
@@ -26,14 +27,15 @@ import {
   AlertDialogContent,
   AlertDialogHeader,
   AlertDialogBody,
-  Grid,
   AlertDialogFooter,
   InputGroup,
   InputLeftAddon,
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
+import { MdDelete, MdClose } from "react-icons/md";
 import { useReactOidc } from "@axa-fr/react-oidc-context";
+import ReactCompareImage from "react-compare-image";
 export interface IImageEditor {
-  image: IImage;
+  image: ImageInfo;
   onClose: () => void;
   onChange: () => void;
   onDelete: () => void;
@@ -55,7 +57,7 @@ const RenameConfirm = ({
   onConfirm: () => void;
   onClose: () => void;
 }) => {
-  const ref = React.useRef<HTMLElement>(null);
+  const ref = React.useRef<HTMLButtonElement>(null);
   return (
     <AlertDialog isOpen={open} onClose={onClose} leastDestructiveRef={ref}>
       <AlertDialogOverlay />
@@ -92,12 +94,12 @@ const ReplaceCofirm = ({
   onClose,
   onConfirm,
 }: {
-  image: IImage;
+  image: ImageInfo;
   file?: File;
   onClose: () => void;
   onConfirm: () => void;
 }) => {
-  const ref = React.useRef<HTMLElement>(null);
+  const ref = React.useRef<HTMLButtonElement>(null);
   return (
     <AlertDialog
       isOpen={file != null}
@@ -111,38 +113,14 @@ const ReplaceCofirm = ({
         </AlertDialogHeader>
         <AlertDialogBody>
           Bạn có chắc chắn muốn đổi hình ảnh chứ?
-          <Grid mt={4} templateColumns="repeat(2, 1fr)" gap={6}>
-            <Box>
-              <Box
-                fontWeight="bold"
-                color="red.500"
-                textAlign="center"
-                w="100%"
-              >
-                Hình cũ
-              </Box>
-              <Image
-                src={imageAPI.getPreviewLink(image)}
-                alt={image.tags.join(",")}
-              />
-            </Box>
-            <Box>
-              <Box
-                fontWeight="bold"
-                color="blue.500"
-                textAlign="center"
-                w="100%"
-              >
-                Hình mới
-              </Box>
-              {file && (
-                <Image
-                  src={URL.createObjectURL(file)}
-                  alt={image.tags.join(",")}
-                />
-              )}
-            </Box>
-          </Grid>
+          {file && (
+            <ReactCompareImage
+              leftImage={imageAPI.getPreviewLink(image)}
+              leftImageLabel="Hình cũ"
+              rightImage={URL.createObjectURL(file)}
+              rightImageLabel="Hình mới"
+            />
+          )}
         </AlertDialogBody>
 
         <AlertDialogFooter>
@@ -272,14 +250,14 @@ export const ImageEditor = (props: IImageEditor) => {
         <DeleteButton
           mr={1}
           size="sm"
-          icon="delete"
+          icon={<MdDelete />}
           color="red.500"
           onConfirm={handleDelete}
           aria-label="Delete"
         />
         <IconButton
           size="sm"
-          icon="close"
+          icon={<MdClose />}
           onClick={props.onClose}
           aria-label="Close"
         ></IconButton>

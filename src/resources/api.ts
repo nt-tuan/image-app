@@ -1,3 +1,4 @@
+import { ImageInfo, ImageHistory } from "resources/models";
 const base = process.env.REACT_APP_API_URL;
 export interface RequestError {
   Err: string;
@@ -9,7 +10,7 @@ async function request<T>(
   body?: BodyInit,
   token?: string,
   extraHeaders?: { [key: string]: string }
-): Promise<T | void> {
+): Promise<T> {
   const url = base + path;
   const baseHeaders = extraHeaders
     ? extraHeaders
@@ -22,7 +23,7 @@ async function request<T>(
   const response = await fetch(url, { method, headers, body });
   const text = await response.text();
   if (response.ok) {
-    if (text == null || text === "") return;
+    if (text == null || text === "") return {} as T;
     return JSON.parse(text);
   }
   if (response.status === 401) return Promise.reject(UnauthorizeError);
@@ -31,38 +32,30 @@ async function request<T>(
   return Promise.reject(JSON.parse(text) as RequestError);
 }
 
-export interface IImage {
-  fullname: string;
-  id: number;
-  tags: string[];
-  time: Date;
-}
-
 const get = async (token: string) => {
   const url = `/admin/images?pageSize=999999&pageCurrent=0&orderBy=id`;
-  var res = await request<IImage[]>("GET", url, undefined, token);
+  var res = await request<ImageInfo[]>("GET", url, undefined, token);
   if (res == null) {
     return Promise.reject("invalid-data");
   }
   const time = new Date();
-  return res.map((images) => ({ ...images, time }));
+  return res.map((image) => ({ ...image, time, link: getPreviewLink(image) }));
 };
 
 const getByID = async (id: number, token: string) => {
   const url = `/admin/image/${id}`;
-  var res = await request<IImage>("GET", url, undefined, token);
-  if (res === undefined) {
+  var image = await request<ImageInfo>("GET", url, undefined, token);
+  if (image === undefined) {
     return Promise.reject("invalid-data");
   }
-  res.time = new Date();
-  return res;
+  return image;
 };
 
 const upload = async (name: string, data: File, token: string) => {
   const formData = new FormData();
   formData.append("file", data);
   formData.append("name", name);
-  const image = await request<IImage>(
+  const image = await request<ImageInfo>(
     "POST",
     `/admin/image`,
     formData,
@@ -73,7 +66,6 @@ const upload = async (name: string, data: File, token: string) => {
     return Promise.reject("invalid-data");
   }
   image.tags = [];
-  image.time = new Date();
   return image;
 };
 
@@ -112,11 +104,46 @@ const deleteTag = async (id: number, tag: string, token: string) => {
 const purgeCache = (id: number, token: string) => {
   return request("POST", `/admin/image/${id}/purgeCache`, undefined, token);
 };
-const getPreviewLink = (image: IImage) => {
+const getPreviewLink = (image: ImageInfo) => {
   return `${base}/nocache/images/static/${image.fullname}`;
 };
-const getProductionLink = (image: IImage) =>
+const getProductionLink = (image: ImageInfo) =>
   `${base}/images/static/${image.fullname}`;
+const getResizedLink = (image: ImageInfo, w: number, h: number) =>
+  `${base}/images/size/${w}/${h}/${image.fullname}`;
+const getWebpResizedLink = (image: ImageInfo, w: number, h: number) =>
+  `${base}/images/webp/${w}/${h}/${image.fullname}`;
+const getImageHistories = (id: number, token: string) =>
+  request<ImageHistory[]>(
+    "GET",
+    `/admin/image/${id}/history`,
+    undefined,
+    token
+  );
+const getDeletedImages = (token: string) =>
+  request<ImageHistory[]>("GET", "/admin/deletedImages", undefined, token);
+const restoreDeletedImage = (id: number, token: string) =>
+  request<ImageInfo>(
+    "POST",
+    `/admin/deletedImage/${id}/restore`,
+    undefined,
+    token
+  );
+const getDeletedImageURL = (backupPath?: string) =>
+  `${base}/history/static/${backupPath}`;
+const getDeletedImageObjectURL = async (
+  backupPath: string | undefined,
+  token: string
+) => {
+  const response = await fetch(getDeletedImageURL(backupPath), {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const blob = await response.blob();
+  return URL.createObjectURL(blob);
+};
 export const imageAPI = {
   get,
   getByID,
@@ -128,5 +155,12 @@ export const imageAPI = {
   deleteTag,
   getPreviewLink: getPreviewLink,
   getProductionLink,
+  getResizedLink,
+  getWebpResizedLink,
   purgeCache,
+  getImageHistories,
+  getDeletedImages,
+  restoreDeletedImage,
+  getDeletedImageObjectURL,
+  getDeletedImageURL,
 };
