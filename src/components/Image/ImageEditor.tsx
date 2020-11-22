@@ -30,8 +30,9 @@ import {
   AlertDialogFooter,
   InputGroup,
   InputLeftAddon,
+  Icon,
 } from "@chakra-ui/react";
-import { MdDelete, MdClose } from "react-icons/md";
+import { MdHelp, MdDelete, MdClose } from "react-icons/md";
 import { useReactOidc } from "@axa-fr/react-oidc-context";
 import ReactCompareImage from "react-compare-image";
 export interface IImageEditor {
@@ -283,6 +284,10 @@ export const ImageEditor = (props: IImageEditor) => {
           />
         </InputGroup>
       </FormControl>
+      <Box as={"span"} fontSize="sm" color="gray.500" pt={2}>
+        <Icon as={MdHelp} mr={1} />
+        <i>Click vào hình ảnh để đổi hình ảnh nhé</i>
+      </Box>
       <FileDrop onDrop={handleFileDrop}>
         <ReplaceCofirm
           onClose={() => setReplacedFile(undefined)}

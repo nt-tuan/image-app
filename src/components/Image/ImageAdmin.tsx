@@ -199,6 +199,7 @@ export const ImageHome = () => {
           </Flex>
           <Box flex={1} overflow="hidden">
             <ImageList
+              onTagSelect={(tag) => setSelectedTags(new Set([tag]))}
               images={filtered?.map((image) => ({
                 ...image,
                 href: imageAPI.getPreviewLink(image),

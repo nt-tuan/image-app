@@ -22,8 +22,9 @@ import Moment from "react-moment";
 interface Props {
   images: ImageListItemProps[];
   onSelect: (image: ImageListItemProps) => void;
+  onTagSelect?: (tag: string) => void;
 }
-export const ImageListView = ({ images, onSelect }: Props) => (
+export const ImageListView = ({ images, onSelect, onTagSelect }: Props) => (
   <VStack
     divider={<StackDivider borderColor="gray.200" />}
     spacing={0}
@@ -68,7 +69,7 @@ export const ImageListView = ({ images, onSelect }: Props) => (
               {image.fullname}
             </Box>
             <Spacer />
-            <ImageTags tags={image.tags} />
+            <ImageTags tags={image.tags} onClick={onTagSelect} />
           </Flex>
           <Box fontSize="sm" color="gray.400">
             <HStack spacing={3}>
