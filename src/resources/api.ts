@@ -33,7 +33,7 @@ async function request<T>(
 }
 
 const get = async (token: string) => {
-  const url = `/admin/images?pageSize=999999&pageCurrent=0&orderBy=id`;
+  const url = `/admin/images`;
   var res = await request<ImageInfo[]>("GET", url, undefined, token);
   if (res == null) {
     return Promise.reject("invalid-data");
