@@ -9,7 +9,7 @@ export const Login = () => {
   if (oidcUser == null)
     return (
       <SimpleLayout title="IMAGES">
-        <Button variantColor="blue" onClick={() => login()}>
+        <Button colorScheme="blue" onClick={() => login()}>
           Đăng nhập
         </Button>
       </SimpleLayout>

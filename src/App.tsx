@@ -7,7 +7,6 @@ import { NotAuthenticated as NotFound } from "pages/NotAuthenticated";
 import { NotAuthorized } from "pages/NotAuthorized";
 import { Switch, Route, BrowserRouter, Redirect } from "react-router-dom";
 import { Home } from "pages/Home";
-import { PageHeader } from "components/Layout/PageHeader";
 import { Login, RedirectLogin } from "pages/Login";
 import { Loading } from "pages/Loading";
 import { TrashPage } from "pages/Trash";
@@ -28,8 +27,6 @@ function App() {
       >
         <BrowserRouter>
           <Flex direction="column" h="100vh">
-            <PageHeader />
-
             <Box flex={1} bgColor="gray.100" color="gray.600" overflow="hidden">
               <Switch>
                 <Route path="/401" exact={true} component={NotAuthorized} />

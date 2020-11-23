@@ -11,7 +11,7 @@ export const SimpleLayout = (props: Props) => {
   return (
     <Flex direction="column" alignItems="center" h="100%">
       <Flex color="blue.500" direction="row" alignItems="baseline">
-        <LogoIcon color="blue.500" />
+        <LogoIcon w={24} h={24} color="blue.500" />
         <Heading ml={2}>{props.title}</Heading>
       </Flex>
       {props.info}

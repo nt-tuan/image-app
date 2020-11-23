@@ -21,7 +21,7 @@ export interface ImageSearchProps<T extends SearchItem> {
   filteredTags?: Set<string>;
   onAddFilteredTags?: (tags: string[]) => void;
   images?: T[];
-  onFiltered: (images: T[]) => void;
+  onFiltered: (images: T[] | undefined) => void;
 }
 export const ImageSearch = <T extends SearchItem>({
   filteredTags,
@@ -61,7 +61,7 @@ export const ImageSearch = <T extends SearchItem>({
     setTags(tags);
   }, [tags, setTags]);
   React.useEffect(() => {
-    setImages(images ?? []);
+    setImages(images);
   }, [images, setImages]);
   return (
     <InputGroup>
@@ -74,13 +74,15 @@ export const ImageSearch = <T extends SearchItem>({
         onChange={handleInputChange}
       />
       <InputRightElement>
-        <IconButton
-          size="sm"
-          h={8}
-          aria-label="clear"
-          icon={<MdClear />}
-          onClick={() => setContentQuery("")}
-        />
+        {contentQuery.length > 0 && (
+          <IconButton
+            size="sm"
+            h={8}
+            aria-label="clear"
+            icon={<MdClear />}
+            onClick={() => setContentQuery("")}
+          />
+        )}
       </InputRightElement>
     </InputGroup>
   );
@@ -88,11 +90,15 @@ export const ImageSearch = <T extends SearchItem>({
 
 // Generic reusable hook
 const useDebouncedSearch = <T extends SearchItem>(
-  searchFunction: (searchPattern: string, images: T[], tags: string[]) => void
+  searchFunction: (
+    searchPattern: string,
+    images: T[] | undefined,
+    tags: string[]
+  ) => void
 ) => {
   // Handle the input text state
   const [inputText, setInputText] = React.useState("");
-  const [images, setImages] = React.useState<T[]>([]);
+  const [images, setImages] = React.useState<T[]>();
   const [tags, setTags] = React.useState<string[]>([]);
   // const [tags, setTags] = React.useState<string[]>([]);
 
@@ -116,7 +122,7 @@ const useDebouncedSearch = <T extends SearchItem>(
 };
 
 const useSearchImage = <T extends SearchItem>(
-  onFiltered: (images: T[]) => void
+  onFiltered: (images: T[] | undefined) => void
 ) => {
   return useDebouncedSearch<T>((searchPattern, images, tags) => {
     const normalizeSearchPattern = searchPattern.replace(normalizePattern, "");

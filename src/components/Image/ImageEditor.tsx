@@ -30,8 +30,10 @@ import {
   AlertDialogFooter,
   InputGroup,
   InputLeftAddon,
+  Icon,
+  VStack,
 } from "@chakra-ui/react";
-import { MdDelete, MdClose } from "react-icons/md";
+import { MdHelp, MdDelete, MdClose } from "react-icons/md";
 import { useReactOidc } from "@axa-fr/react-oidc-context";
 import ReactCompareImage from "react-compare-image";
 export interface IImageEditor {
@@ -269,65 +271,74 @@ export const ImageEditor = (props: IImageEditor) => {
         onClose={handleNotConfirmRename}
         onConfirm={handleConfirmRename}
       />
-      <FormControl>
-        <FormLabel>File path</FormLabel>
-        <InputGroup>
-          <InputLeftAddon>./</InputLeftAddon>
-          <Input
-            roundedLeft={0}
-            type="text"
-            value={folder}
-            onChange={handleFolderChange}
-            onBlur={() => setConfirmRename(true)}
-            onKeyPress={handleFilepathKeyPress}
-          />
-        </InputGroup>
-      </FormControl>
-      <FileDrop onDrop={handleFileDrop}>
-        <ReplaceCofirm
-          onClose={() => setReplacedFile(undefined)}
-          onConfirm={handleReplaceFile}
-          file={replacedFile}
-          image={props.image}
-        />
-        <Box py={2}>
-          <Box
-            border="1px"
-            borderRadius="md"
-            borderColor="gray.500"
-            overflow="hidden"
-          >
-            <Image
-              key={imageKey}
-              minHeight={240}
-              maxHeight={300}
-              width="100%"
-              objectFit="cover"
-              onClick={openFileSelect}
-              src={imageAPI.getPreviewLink(props.image)}
-              alt={imageAPI.getPreviewLink(props.image)}
+      <VStack>
+        <FormControl>
+          <FormLabel>File path</FormLabel>
+          <InputGroup>
+            <InputLeftAddon>./</InputLeftAddon>
+            <Input
+              roundedLeft={0}
+              type="text"
+              value={folder}
+              onChange={handleFolderChange}
+              onBlur={() => setConfirmRename(true)}
+              onKeyPress={handleFilepathKeyPress}
             />
+          </InputGroup>
+        </FormControl>
+        <Box cursor="pointer">
+          <Box color="gray.500" pt={2}>
+            <Icon mb={1} w={4} h={4} as={MdHelp} />
+            Click vào hình ảnh để đổi hình ảnh nhé
           </Box>
+          <FileDrop onDrop={handleFileDrop}>
+            <ReplaceCofirm
+              onClose={() => setReplacedFile(undefined)}
+              onConfirm={handleReplaceFile}
+              file={replacedFile}
+              image={props.image}
+            />
+
+            <Box py={2}>
+              <Box
+                border="1px"
+                borderRadius="md"
+                borderColor="gray.500"
+                overflow="hidden"
+              >
+                <Image
+                  key={imageKey}
+                  minHeight={240}
+                  maxHeight={300}
+                  width="100%"
+                  objectFit="cover"
+                  onClick={openFileSelect}
+                  src={imageAPI.getPreviewLink(props.image)}
+                  alt={imageAPI.getPreviewLink(props.image)}
+                />
+              </Box>
+            </Box>
+          </FileDrop>
         </Box>
-      </FileDrop>
-      <Box display="none">
-        <input
-          ref={ref}
-          type="file"
-          multiple={false}
-          onChange={handleFileInputChange}
-          accept="image/png"
-        />
-      </Box>
-      <FormControl>
-        <FormLabel>Tag</FormLabel>
-        <SelectTags
-          onAddTag={handleAddTag}
-          onRemoveTag={handleRemoveTag}
-          tags={Array.from(ctx.tags)}
-          selected={tags}
-        />
-      </FormControl>
+        <Box display="none">
+          <input
+            ref={ref}
+            type="file"
+            multiple={false}
+            onChange={handleFileInputChange}
+            accept="image/png"
+          />
+        </Box>
+        <FormControl>
+          <FormLabel>Tag</FormLabel>
+          <SelectTags
+            onAddTag={handleAddTag}
+            onRemoveTag={handleRemoveTag}
+            tags={Array.from(ctx.tags)}
+            selected={tags}
+          />
+        </FormControl>
+      </VStack>
     </Flex>
   );
 };

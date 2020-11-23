@@ -41,6 +41,7 @@ interface Props {
   total: number;
   onSelect: (image: ImageListItemProps) => void;
   sortByOptions?: SortOptionValue[];
+  onTagSelect?: (tag: string) => void;
 }
 type SortOptionValue = "filename" | "at" | "width" | "height" | "diskSize";
 const optionText = {
@@ -84,6 +85,7 @@ export const ImageList = ({
   total,
   onSelect,
   sortByOptions,
+  onTagSelect,
 }: Props) => {
   const [viewMode, setViewMode] = React.useState<"grid" | "list">("list");
   const [sortDirection, setSortDirection] = React.useState<SortDirection>(
@@ -110,14 +112,22 @@ export const ImageList = ({
       <Box flex={1} overflowY="auto">
         {translateImages.length === 0 && <Center>Không có hình ảnh nào</Center>}
         {translateImages.length !== 0 && viewMode === "grid" && (
-          <ImagesGridView images={translateImages} onSelect={onSelect} />
+          <ImagesGridView
+            images={translateImages}
+            onSelect={onSelect}
+            onTagSelect={onTagSelect}
+          />
         )}
         {translateImages.length !== 0 && viewMode === "list" && (
-          <ImageListView images={translateImages} onSelect={onSelect} />
+          <ImageListView
+            images={translateImages}
+            onSelect={onSelect}
+            onTagSelect={onTagSelect}
+          />
         )}
       </Box>
       <Flex color="gray" fontSize="sm" direction="row" alignItems="center">
-        <Box flex={1}>
+        <Box flex={1} isTruncated>
           Có {translateImages.length}/{total} hình ảnh được hiển thị
         </Box>
         <HStack>

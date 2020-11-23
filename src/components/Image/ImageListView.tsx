@@ -6,14 +6,14 @@ import {
   VStack,
   Icon,
   HStack,
+  Avatar,
 } from "@chakra-ui/react";
 import React from "react";
 import {
-  MdAccessTime,
-  MdAccountCircle,
   MdHelpOutline,
   MdPhotoSizeSelectActual,
   MdStorage,
+  MdDateRange,
 } from "react-icons/md";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { ImageListItemProps } from "./ImageList";
@@ -22,8 +22,9 @@ import Moment from "react-moment";
 interface Props {
   images: ImageListItemProps[];
   onSelect: (image: ImageListItemProps) => void;
+  onTagSelect?: (tag: string) => void;
 }
-export const ImageListView = ({ images, onSelect }: Props) => (
+export const ImageListView = ({ images, onSelect, onTagSelect }: Props) => (
   <VStack
     divider={<StackDivider borderColor="gray.200" />}
     spacing={0}
@@ -68,7 +69,7 @@ export const ImageListView = ({ images, onSelect }: Props) => (
               {image.fullname}
             </Box>
             <Spacer />
-            <ImageTags tags={image.tags} />
+            <ImageTags tags={image.tags} onClick={onTagSelect} />
           </Flex>
           <Box fontSize="sm" color="gray.400">
             <HStack spacing={3}>
@@ -88,13 +89,13 @@ export const ImageListView = ({ images, onSelect }: Props) => (
               )}
               {image.by && (
                 <HStack spacing={1}>
-                  <Icon as={MdAccountCircle} />
+                  <Avatar size="2xs" name={image.by} />
                   <Box>{image.by}</Box>
                 </HStack>
               )}
               {image.at && (
                 <HStack spacing={1}>
-                  <Icon as={MdAccessTime} />
+                  <Icon as={MdDateRange} />
                   <Moment fromNow>{image.at}</Moment>
                 </HStack>
               )}

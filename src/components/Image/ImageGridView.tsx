@@ -6,8 +6,9 @@ import { ImageListItemProps } from "./ImageList";
 interface Props {
   images: ImageListItemProps[];
   onSelect: (image: ImageListItemProps) => void;
+  onTagSelect?: (tag: string) => void;
 }
-export const ImagesGridView = ({ images, onSelect }: Props) => (
+export const ImagesGridView = ({ images, onSelect, onTagSelect }: Props) => (
   <SimpleGrid
     minChildWidth={{ base: "100px", lg: "200px" }}
     spacing={6}
@@ -52,7 +53,7 @@ export const ImagesGridView = ({ images, onSelect }: Props) => (
               overflow="hidden"
             >
               <Flex direction="row" flexWrap="wrap">
-                <ImageTags tags={image.tags} />
+                <ImageTags tags={image.tags} onClick={onTagSelect} />
               </Flex>
             </Box>
           </Box>
