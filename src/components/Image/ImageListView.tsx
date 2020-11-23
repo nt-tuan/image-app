@@ -6,14 +6,14 @@ import {
   VStack,
   Icon,
   HStack,
+  Avatar,
 } from "@chakra-ui/react";
 import React from "react";
 import {
-  MdAccessTime,
-  MdAccountCircle,
   MdHelpOutline,
   MdPhotoSizeSelectActual,
   MdStorage,
+  MdDateRange,
 } from "react-icons/md";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { ImageListItemProps } from "./ImageList";
@@ -89,13 +89,13 @@ export const ImageListView = ({ images, onSelect, onTagSelect }: Props) => (
               )}
               {image.by && (
                 <HStack spacing={1}>
-                  <Icon as={MdAccountCircle} />
+                  <Avatar size="2xs" name={image.by} />
                   <Box>{image.by}</Box>
                 </HStack>
               )}
               {image.at && (
                 <HStack spacing={1}>
-                  <Icon as={MdAccessTime} />
+                  <Icon as={MdDateRange} />
                   <Moment fromNow>{image.at}</Moment>
                 </HStack>
               )}

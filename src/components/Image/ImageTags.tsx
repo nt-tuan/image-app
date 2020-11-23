@@ -19,6 +19,7 @@ export const ImageTags = ({ tags, onClose, onClick }: Props) => {
     <HStack wrap="wrap">
       {tags.map((tag) => (
         <Tag
+          key={tag}
           cursor="pointer"
           colorScheme="blue"
           size="sm"

@@ -127,7 +127,7 @@ export const ImageList = ({
         )}
       </Box>
       <Flex color="gray" fontSize="sm" direction="row" alignItems="center">
-        <Box flex={1}>
+        <Box flex={1} isTruncated>
           Có {translateImages.length}/{total} hình ảnh được hiển thị
         </Box>
         <HStack>

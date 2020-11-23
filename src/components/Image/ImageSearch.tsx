@@ -74,13 +74,15 @@ export const ImageSearch = <T extends SearchItem>({
         onChange={handleInputChange}
       />
       <InputRightElement>
-        <IconButton
-          size="sm"
-          h={8}
-          aria-label="clear"
-          icon={<MdClear />}
-          onClick={() => setContentQuery("")}
-        />
+        {contentQuery.length > 0 && (
+          <IconButton
+            size="sm"
+            h={8}
+            aria-label="clear"
+            icon={<MdClear />}
+            onClick={() => setContentQuery("")}
+          />
+        )}
       </InputRightElement>
     </InputGroup>
   );

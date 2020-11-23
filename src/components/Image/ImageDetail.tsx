@@ -13,7 +13,6 @@ import {
   IconButton,
   Input,
   Image,
-  Tag,
   InputGroup,
   InputRightAddon,
   useClipboard,
@@ -21,8 +20,11 @@ import {
   NumberInputField,
   InputLeftAddon,
   HStack,
+  VStack,
 } from "@chakra-ui/react";
 import { ImageFullscreenButton } from "./ImageFullscreenButton";
+import { ImageTags } from "./ImageTags";
+import { ImageContext } from "./ImageAdmin";
 
 export interface IImageEditor {
   image: ImageInfo;
@@ -107,6 +109,7 @@ export const ImageDetail = (props: IImageEditor) => {
   const link = React.useMemo(() => imageAPI.getProductionLink(props.image), [
     props,
   ]);
+  const ctx = React.useContext(ImageContext);
   const { onCopy } = useClipboard(link);
   return (
     <Flex direction="column" h="100%" w="100%">
@@ -130,48 +133,56 @@ export const ImageDetail = (props: IImageEditor) => {
           ></IconButton>
         </HStack>
       </Flex>
-      <FormControl size="sm">
-        <FormLabel>File path</FormLabel>
-        <InputGroup>
-          <Input isReadOnly borderRightRadius={0} type="text" value={link} />
-          <InputRightAddon
-            onClick={onCopy}
-            cursor="pointer"
-            children={<MdContentCopy />}
-          />
-        </InputGroup>
-      </FormControl>
-      <ResizePath image={props.image} />
-      <FileDrop>
-        <Box py={2}>
-          <Box
-            border="1px"
-            borderRadius="md"
-            borderColor="gray.500"
-            overflow="hidden"
-          >
-            <Image
-              minHeight={240}
-              maxHeight={300}
-              width="100%"
-              objectFit="cover"
-              src={imageAPI.getPreviewLink(props.image)}
-              alt={imageAPI.getPreviewLink(props.image)}
+      <VStack justify="stretch" spacing={4}>
+        <FormControl size="sm">
+          <FormLabel>File path</FormLabel>
+          <InputGroup>
+            <Input isReadOnly borderRightRadius={0} type="text" value={link} />
+            <InputRightAddon
+              onClick={onCopy}
+              cursor="pointer"
+              children={<MdContentCopy />}
             />
-          </Box>
-        </Box>
-      </FileDrop>
-      {props.image.tags && props.image.tags.length > 0 && (
-        <FormControl>
-          <FormLabel>Tags</FormLabel>
-          {props.image.tags.map((tag) => (
-            <Tag key={tag}>{tag}</Tag>
-          ))}
+          </InputGroup>
         </FormControl>
-      )}
-      <Box pt={12}>
-        <ImageHistories id={props.image.id} />
-      </Box>
+        <Box w="100%">
+          <ResizePath image={props.image} />
+        </Box>
+        <FileDrop>
+          <Box>
+            <FormLabel>Hình ảnh</FormLabel>
+            <Box
+              border="1px"
+              borderRadius="md"
+              borderColor="gray.500"
+              overflow="hidden"
+            >
+              <Image
+                minHeight={240}
+                maxHeight={300}
+                width="100%"
+                objectFit="cover"
+                src={imageAPI.getPreviewLink(props.image)}
+                alt={imageAPI.getPreviewLink(props.image)}
+              />
+            </Box>
+          </Box>
+        </FileDrop>
+        {props.image.tags && props.image.tags.length > 0 && (
+          <FormControl w="100%">
+            <FormLabel>Tags</FormLabel>
+            <ImageTags
+              tags={props.image.tags}
+              onClick={(tag) =>
+                ctx && ctx.selectedTags && ctx.setSelectedTags(new Set([tag]))
+              }
+            />
+          </FormControl>
+        )}
+        <Box w="100%">
+          <ImageHistories id={props.image.id} />
+        </Box>
+      </VStack>
     </Flex>
   );
 };

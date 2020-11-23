@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Box,
   Heading,
   HStack,
@@ -14,8 +15,7 @@ import {
   MdSwapHoriz,
   MdRestore,
   MdTextFields,
-  MdTimelapse,
-  MdAccountCircle,
+  MdDateRange,
 } from "react-icons/md";
 import React from "react";
 import { ImageHistory } from "resources/models";
@@ -69,13 +69,13 @@ const ImageHistoriesView = (props: Props) => {
           <HStack spacing={3} fontSize="sm" color="gray.400">
             {h.by && (
               <HStack spacing={1}>
-                <Icon as={MdAccountCircle} />
+                <Avatar size="2xs" name={h.by} />
                 <Box>{h.by}</Box>
               </HStack>
             )}
             {h.at && (
               <HStack spacing={1}>
-                <Icon as={MdTimelapse} /> <Moment fromNow>{h.at}</Moment>
+                <Icon as={MdDateRange} /> <Moment fromNow>{h.at}</Moment>
               </HStack>
             )}
           </HStack>
