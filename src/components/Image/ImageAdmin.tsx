@@ -44,9 +44,13 @@ export const ImageHome = () => {
   const [unauthorized, setUnauthorized] = React.useState(false);
   const [err, setErr] = React.useState<RequestError>();
   React.useEffect(() => {
+    let subscription = true;
     imageAPI
       .get(oidcUser.access_token)
       .then((images) => {
+        if (!subscription) {
+          return;
+        }
         const tags = images.reduce((pre, cur) => {
           if (cur.tags != null) {
             return [...pre, ...cur.tags];
@@ -65,6 +69,9 @@ export const ImageHome = () => {
           return;
         }
       });
+    return () => {
+      subscription = false;
+    };
   }, [oidcUser]);
   const handleViewAdd = () => {
     setSelected({

@@ -8,6 +8,7 @@ import {
   InputGroup,
   InputLeftElement,
   InputRightElement,
+  Spinner,
 } from "@chakra-ui/react";
 import { Icon } from "@chakra-ui/icons";
 import { MdSearch, MdClear } from "react-icons/md";
@@ -30,39 +31,34 @@ export const ImageSearch = <T extends SearchItem>({
   onFiltered,
 }: ImageSearchProps<T>) => {
   const [contentQuery, setContentQuery] = React.useState<string>("");
-  const { setInputText, setImages, setTags } = useSearchImage(onFiltered);
-  const handleInputChange = React.useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const query = e.target?.value ?? "";
-      const tagExpress = query.match(searchByTagPattern);
-      const tags =
-        tagExpress && tagExpress.length > 0
-          ? tagExpress[0]
-              .replace(/[[]]*/, "")
-              .split(",")
-              .map((tag) => tag.trim().replace(normalizePattern, ""))
-              .filter((tag) => tag !== "")
-          : [];
-      const contentQuery = query.replace(searchByTagPattern, "");
-      onAddFilteredTags && tags.length > 0 && onAddFilteredTags(tags);
-      setContentQuery(contentQuery);
-    },
-    [onAddFilteredTags]
-  );
   const tags = React.useMemo(() => {
     if (filteredTags == null) return [];
     return Array.from(filteredTags);
   }, [filteredTags]);
-
+  const { inputText, setInputText, searchResult } = useSearchImage(
+    images,
+    tags
+  );
+  const handleInputChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setInputText(e.target.value);
+    },
+    [setInputText]
+  );
   React.useEffect(() => {
-    setInputText(contentQuery);
-  }, [contentQuery, setInputText]);
-  React.useEffect(() => {
-    setTags(tags);
-  }, [tags, setTags]);
-  React.useEffect(() => {
-    setImages(images);
-  }, [images, setImages]);
+    if (searchResult == null) return;
+    if (searchResult.loading) {
+      onFiltered(undefined);
+      return;
+    }
+    if (searchResult.result == null) return;
+    if (searchResult.result.newTags.length > 0) {
+      setInputText(searchResult.result.searchPattern);
+      onAddFilteredTags && onAddFilteredTags(searchResult.result.newTags);
+    }
+    searchResult.result.filteredItems &&
+      onFiltered(searchResult.result.filteredItems);
+  }, [searchResult, onFiltered, onAddFilteredTags, setInputText]);
   return (
     <InputGroup>
       <InputLeftElement>
@@ -71,11 +67,16 @@ export const ImageSearch = <T extends SearchItem>({
       <Input
         placeholder="Search..."
         bgColor="white"
-        value={contentQuery}
+        value={inputText}
         onChange={handleInputChange}
       />
       <InputRightElement>
-        {contentQuery.length > 0 && (
+        {searchResult.loading && (
+          <span>
+            <Spinner size="sm" color="blue.500" />
+          </span>
+        )}
+        {!searchResult.loading && contentQuery.length > 0 && (
           <IconButton
             size="sm"
             h={8}
@@ -91,18 +92,16 @@ export const ImageSearch = <T extends SearchItem>({
 
 // Generic reusable hook
 const useDebouncedSearch = <T extends SearchItem>(
+  images: T[] | undefined,
+  tags: string[],
   searchFunction: (
     searchPattern: string,
     images: T[] | undefined,
     tags: string[]
-  ) => void
+  ) => DebouceSearchResult<T>
 ) => {
   // Handle the input text state
   const [inputText, setInputText] = React.useState("");
-  const [images, setImages] = React.useState<T[]>();
-  const [tags, setTags] = React.useState<string[]>([]);
-  // const [tags, setTags] = React.useState<string[]>([]);
-
   // Debounce the original search async function
   const debouncedSearchFunction = useConstant(() =>
     AwesomeDebouncePromise(searchFunction, 500)
@@ -111,35 +110,82 @@ const useDebouncedSearch = <T extends SearchItem>(
   // The async callback is run each time the text changes,
   // but as the search function is debounced, it does not
   // fire a new request on each keystroke
-  useAsync(async () => {
+  const searchResult = useAsync(async () => {
+    const tagExpress = inputText.match(searchByTagPattern);
+    const newTags =
+      tagExpress && tagExpress.length > 0
+        ? tagExpress[0]
+            .replace(/[[]]*/, "")
+            .split(",")
+            .map((tag) => tag.trim().replace(normalizePattern, ""))
+            .filter((tag) => tag !== "")
+        : [];
+    const searchPattern = inputText.replace(searchByTagPattern, "");
+    if (searchPattern !== inputText || newTags.length > 0) {
+      return {
+        searchPattern,
+        newTags,
+        filteredItems: undefined,
+      } as DebouceSearchResult<T>;
+    }
     return debouncedSearchFunction(inputText, images, tags);
   }, [debouncedSearchFunction, inputText, images, tags]);
+
   // Return everything needed for the hook consumer
   return {
+    inputText,
     setInputText,
-    setImages,
-    setTags,
+    searchResult,
   };
 };
-
+interface DebouceSearchResult<T extends SearchItem> {
+  filteredItems: T[] | undefined;
+  newTags: string[];
+  searchPattern: string;
+}
 const useSearchImage = <T extends SearchItem>(
-  onFiltered: (images: T[] | undefined) => void
+  images: T[] | undefined,
+  tags: string[]
 ) => {
-  return useDebouncedSearch<T>((searchPattern, images, tags) => {
+  const search = (
+    inputText: string,
+    images: T[] | undefined,
+    tags: string[]
+  ) => {
+    const tagExpress = inputText.match(searchByTagPattern);
+    const newTags =
+      tagExpress && tagExpress.length > 0
+        ? tagExpress[0]
+            .replace(/[[]]*/, "")
+            .split(",")
+            .map((tag) => tag.trim().replace(normalizePattern, ""))
+            .filter((tag) => tag !== "")
+        : [];
+    const searchPattern = inputText.replace(searchByTagPattern, "");
+    if (searchPattern !== inputText || newTags.length > 0) {
+      return {
+        searchPattern,
+        newTags,
+        filteredItems: undefined,
+      } as DebouceSearchResult<T>;
+    }
     const normalizeSearchPattern =
       searchPattern?.replace(normalizePattern, "") ?? "";
-    const filtered = images?.filter((image) => {
+    const filteredItems = images?.filter((image) => {
       const imageFullname = image.fullname.replace(normalizePattern, "");
-      if (!imageFullname.match(normalizeSearchPattern)) return false;
+      if (
+        normalizeSearchPattern.length > 1 &&
+        !imageFullname.match(normalizeSearchPattern)
+      )
+        return false;
       if (tags.length === 0) return true;
-      if (image.tags == null) return true;
+      if (image.tags == null) return false;
       return (
-        image.tags.filter(
-          (imageTag) => tags.filter((tag) => tag === imageTag).length > 0
-        ).length >= tags.length
+        image.tags.filter((imageTag) => tags.includes(imageTag)).length >=
+        tags.length
       );
     });
-    onFiltered(filtered);
-    return { searchPattern };
-  });
+    return { searchPattern, newTags, filteredItems } as DebouceSearchResult<T>;
+  };
+  return useDebouncedSearch<T>(images, tags, search);
 };

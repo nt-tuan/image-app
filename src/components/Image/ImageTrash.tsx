@@ -25,14 +25,21 @@ export const Trash = () => {
     [filtered]
   );
   React.useEffect(() => {
+    let subscription = true;
     imageAPI
       .getDeletedImages(oidcUser.access_token)
-      .then(setImages)
+      .then((images) => {
+        if (!subscription) return;
+        setImages(images);
+      })
       .catch((err: RequestError) => {
         if (err === UnauthorizeError) {
           setUnauthorized(false);
         }
       });
+    return () => {
+      subscription = false;
+    };
   }, [oidcUser]);
   const handleSelect = (id: number) => {
     const foundImages = images?.filter((image) => image.id === id);
@@ -59,7 +66,6 @@ export const Trash = () => {
         overflowY="hidden"
         display={{ base: selected ? "none" : "flex", md: "flex" }}
         direction="column"
-        pt={6}
         flexGrow={1}
         justify="stretch"
       >

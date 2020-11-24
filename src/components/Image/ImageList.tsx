@@ -108,9 +108,9 @@ export const ImageList = ({
     return <ErrorAlert title="Đã có lỗi xãy ra" description={err.Err} />;
   if (translateImages == null) {
     return (
-      <Flex w="100%" direction="column" alignItems="center">
+      <Center h="100%" w="100%">
         <Spinner color="blue.500" />
-      </Flex>
+      </Center>
     );
   }
   return (

@@ -19,6 +19,8 @@ const theme = extendTheme({
     mono: "myFont",
   },
 });
+const RedirectToApp = () => <Redirect to="/app" />;
+const RedirectToLogin = () => <Redirect to="/login" />;
 function App() {
   return (
     <ChakraProvider theme={theme}>
@@ -42,16 +44,12 @@ function App() {
           >
             <Switch>
               <Route path="/401" exact={true} component={NotAuthorized} />
-              <Route path="/callback" exact>
-                <Redirect to="/app" />
-              </Route>
+              <Route path="/callback" exact component={RedirectToApp} />
               <Route path="/login" exact component={Login} />
               <Route path="/logout/callback" exact component={RedirectLogin} />
               <Route path="/app" component={ProtectedPages} />
               <Route path="/404" exact component={NotFound} />
-              <Route path="/">
-                <Redirect to="/login" />
-              </Route>
+              <Route path="/" component={RedirectToLogin} />
             </Switch>
           </Flex>
         </BrowserRouter>
