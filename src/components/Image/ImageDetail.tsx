@@ -157,7 +157,7 @@ export const ImageDetail = (props: IImageEditor) => {
                   height={300}
                   width="100%"
                   objectFit="cover"
-                  src={imageAPI.getPreviewLink(props.image) + "x"}
+                  src={imageAPI.getPreviewLink(props.image)}
                   alt={props.image.fullname}
                 />
               </Box>
