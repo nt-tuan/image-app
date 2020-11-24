@@ -1,4 +1,11 @@
-import { Flex, Heading, HStack, IconButton, Image } from "@chakra-ui/react";
+import {
+  Flex,
+  Heading,
+  HStack,
+  IconButton,
+  Image,
+  VStack,
+} from "@chakra-ui/react";
 import React from "react";
 import { MdClose, MdRestore } from "react-icons/md";
 import { imageAPI } from "resources/api";
@@ -7,6 +14,7 @@ import { ImageHistories } from "./ImageHistories";
 
 interface ViewProps {
   image: ImageHistory;
+  loading?: boolean;
   onRestore: () => void;
   onClose: () => void;
 }
@@ -19,6 +27,7 @@ export const DeletedImageDetail = (props: ViewProps) => {
         </Heading>
         <HStack>
           <IconButton
+            isLoading={props.loading}
             icon={<MdRestore />}
             aria-label="restore"
             onClick={props.onRestore}
@@ -30,16 +39,17 @@ export const DeletedImageDetail = (props: ViewProps) => {
           />
         </HStack>
       </Flex>
-
-      <Image
-        minHeight={240}
-        maxHeight={300}
-        width="100%"
-        objectFit="cover"
-        src={imageAPI.getDeletedImageURL(props.image.backupFullname)}
-        alt={props.image.fullname}
-      />
-      <ImageHistories id={props.image.fileID} />
+      <VStack align="stretch" overflowY="auto">
+        <Image
+          minHeight={240}
+          maxHeight={300}
+          width="100%"
+          objectFit="cover"
+          src={imageAPI.getDeletedImageURL(props.image.backupFullname)}
+          alt={props.image.fullname}
+        />
+        <ImageHistories id={props.image.fileID} />
+      </VStack>
     </Flex>
   );
 };

@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import { ChakraProvider, CSSReset, Flex, Box } from "@chakra-ui/react";
+import { ChakraProvider, CSSReset, Flex, extendTheme } from "@chakra-ui/react";
 import { AuthenticationProvider } from "@axa-fr/react-oidc-context";
 import { oidcConfiguration } from "resources/oidcConfiguration";
 import { NotAuthenticated as NotFound } from "pages/NotAuthenticated";
@@ -13,9 +13,16 @@ import { TrashPage } from "pages/Trash";
 import Moment from "react-moment";
 import "moment/locale/vi";
 Moment.globalLocale = "vi";
+const theme = extendTheme({
+  fonts: {
+    body: "myFont",
+    heading: "myFont",
+    mono: "myFont",
+  },
+});
 function App() {
   return (
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
       <CSSReset />
       <AuthenticationProvider
         configuration={oidcConfiguration}
@@ -26,27 +33,28 @@ function App() {
         sessionLostComponent={Loading}
       >
         <BrowserRouter>
-          <Flex direction="column" h="100vh">
-            <Box flex={1} bgColor="gray.100" color="gray.600" overflow="hidden">
-              <Switch>
-                <Route path="/401" exact={true} component={NotAuthorized} />
-                <Route path="/callback" exact>
-                  <Redirect to="/app" />
-                </Route>
-                <Route path="/login" exact component={Login} />
-                <Route
-                  path="/logout/callback"
-                  exact
-                  component={RedirectLogin}
-                />
-                <Route path="/app" exact component={Home} />
-                <Route path="/app/trash" exact component={TrashPage} />
-                <Route path="/404" exact component={NotFound} />
-                <Route path="/">
-                  <Redirect to="/login" />
-                </Route>
-              </Switch>
-            </Box>
+          <Flex
+            direction="column"
+            h="100vh"
+            w="100%"
+            overflow="hidden"
+            bgColor="gray.100"
+            color="gray.600"
+          >
+            <Switch>
+              <Route path="/401" exact={true} component={NotAuthorized} />
+              <Route path="/callback" exact>
+                <Redirect to="/app" />
+              </Route>
+              <Route path="/login" exact component={Login} />
+              <Route path="/logout/callback" exact component={RedirectLogin} />
+              <Route path="/app" exact component={Home} />
+              <Route path="/app/trash" exact component={TrashPage} />
+              <Route path="/404" exact component={NotFound} />
+              <Route path="/">
+                <Redirect to="/login" />
+              </Route>
+            </Switch>
           </Flex>
         </BrowserRouter>
       </AuthenticationProvider>

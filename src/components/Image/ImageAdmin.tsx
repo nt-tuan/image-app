@@ -153,36 +153,37 @@ export const ImageHome = () => {
         setSelected,
       }}
     >
-      <Flex h="100%" direction="row">
+      <Flex h="100%" w="100%" direction="row" justify="stretch">
         <Flex
-          height="100%"
-          overflowY="hidden"
           display={{ base: selected ? "none" : "flex", md: "flex" }}
+          w={0}
+          h="100%"
           direction="column"
-          px={4}
-          pt={6}
-          flexGrow={1}
+          flex={1}
         >
-          <ImageSearch
-            filteredTags={selectedTags}
-            onAddFilteredTags={handleAddFilteredTags}
-            images={images}
-            onFiltered={setFiltered}
-          />
-          <Flex alignItems="baseline" direction="row">
-            <Flex flexGrow={1}>
-              <Heading size="lg">Danh sách hình ảnh</Heading>
-            </Flex>
+          <Flex alignItems="end" direction="row" py={2} px={4}>
+            <Heading flex={1} size="lg">
+              Hình ảnh
+            </Heading>
             <Button
+              size="sm"
+              colorScheme="blue"
               leftIcon={<AddIcon />}
-              variant="ghost"
               onClick={handleViewAdd}
             >
               Thêm
             </Button>
           </Flex>
-          <Flex direction="row" alignItems="baseline">
-            <Box flex={1} overflowX="hidden">
+          <Box w="100%" pb={2} shadow="sm" px={4}>
+            <ImageSearch
+              filteredTags={selectedTags}
+              onAddFilteredTags={handleAddFilteredTags}
+              images={images}
+              onFiltered={setFiltered}
+            />
+          </Box>
+          <Flex direction="row" alignItems="baseline" px={4}>
+            <Box flex={1} overflowX="auto">
               <ImageTags
                 onClose={handleDeselectTag}
                 tags={Array.from(selectedTags)}
@@ -197,7 +198,7 @@ export const ImageHome = () => {
               />
             )}
           </Flex>
-          <Box flex={1} overflow="hidden">
+          <Box w="100%" h={0} flex="1">
             <ImageList
               onTagSelect={(tag) => setSelectedTags(new Set([tag]))}
               images={filtered?.map((image) => ({
@@ -211,11 +212,10 @@ export const ImageHome = () => {
         </Flex>
         {selected && (
           <Box
-            minHeight="100%"
-            overflowY="scroll"
+            h="100%"
             bgColor="white"
             px={4}
-            py={6}
+            pt={6}
             flexBasis={{ base: "100%", md: 450 }}
             flexShrink={0}
             boxShadow="lg"

@@ -11,14 +11,15 @@ import {
   MenuItem,
   MenuList,
   Link as UILink,
-  Divider,
   HStack,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { Icon } from "@chakra-ui/icons";
 import { MdKeyboardArrowDown, MdImage, MdRestore } from "react-icons/md";
 import { LogoIcon } from "./LogoIcon";
 
 const UserMenu = () => {
+  const visible = useBreakpointValue({ base: false, md: true });
   const { oidcUser, logout } = useReactOidc();
   if (oidcUser == null) return <Button variant="ghost">Đăng nhập</Button>;
   return (
@@ -32,9 +33,11 @@ const UserMenu = () => {
             name={oidcUser.profile.unique_name}
             src={oidcUser.profile.picture}
           />
-          <Box fontWeight="bold" px={1}>
-            {oidcUser.profile.unique_name}
-          </Box>
+          {visible && (
+            <Box fontWeight="bold" px={1}>
+              {oidcUser.profile.unique_name}
+            </Box>
+          )}
           <Icon as={MdKeyboardArrowDown} />
         </Flex>
       </MenuButton>
@@ -58,6 +61,7 @@ const NavItem = ({
   icon: React.ReactElement;
 }) => {
   const location = useLocation();
+  const visible = useBreakpointValue({ base: false, md: true });
   const active = React.useMemo(() => {
     const match = matchPath(location.pathname, path);
     return match && match.isExact;
@@ -72,7 +76,7 @@ const NavItem = ({
     >
       <HStack spacing={2}>
         {icon}
-        <Box>{children}</Box>
+        {visible && <Box>{children}</Box>}
       </HStack>
     </UILink>
   );
@@ -95,7 +99,6 @@ export const PageHeader = () => {
           IMAGES
         </Box>
       </Flex>
-      <Divider orientation="vertical" alignSelf="center" />
       <NavItem icon={<MdImage />} path="/app">
         {" "}
         Images

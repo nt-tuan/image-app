@@ -2,7 +2,7 @@ import { Flex, Heading } from "@chakra-ui/react";
 import { LogoIcon } from "components/Layout/LogoIcon";
 import React from "react";
 interface Props {
-  title: string;
+  title?: string;
   info?: React.ReactNode;
   children: React.ReactNode;
 }

@@ -4,19 +4,27 @@ import { MdDelete, MdClose } from "react-icons/md";
 import {
   Box,
   Button,
+  Center,
   Flex,
   FormLabel,
   Icon,
   IconButton,
   Image,
+  Spacer,
   Spinner,
   Tag,
+  Text,
+  Tooltip,
 } from "@chakra-ui/react";
+import { MdCheckCircle, MdError } from "react-icons/md";
+import { AddIcon } from "@chakra-ui/icons";
+import { RequestError } from "resources/api";
 export interface IFilePreivew {
   data: string;
   name: string;
   file: File;
   state?: FileState;
+  err?: RequestError;
 }
 
 export enum FileState {
@@ -39,24 +47,33 @@ export const FileInput = ({
 }: IFileInput) => {
   const [images, setImages] = React.useState<IFilePreivew[]>([]);
   const ref = React.useRef<HTMLInputElement>(null);
-  const handleFileDrop = (files: FileList | null) => {
-    setImages([]);
-    if (files == null) return;
-    const fileListAsArray = Array.from(files);
-    const images = fileListAsArray.map((file) => {
-      return {
-        data: URL.createObjectURL(file),
-        name: file.name,
-        file: file,
-        state: FileState.NOTSTARTED,
-      };
-    });
-    onChange && onChange(images);
-  };
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { files } = e.target;
-    handleFileDrop(files);
-  };
+  const handleFileDrop = React.useCallback(
+    (files: FileList | null) => {
+      setImages([]);
+      if (files == null) return;
+      const fileListAsArray = Array.from(files);
+      const imageNames = images.map((image) => image.name);
+      const newImages = fileListAsArray
+        .map((file) => {
+          return {
+            data: URL.createObjectURL(file),
+            name: file.name,
+            file: file,
+            state: FileState.NOTSTARTED,
+          };
+        })
+        .filter((image) => !imageNames.includes(image.name));
+      onChange && onChange([...images, ...newImages]);
+    },
+    [images, onChange]
+  );
+  const handleChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { files } = e.target;
+      handleFileDrop(files);
+    },
+    [handleFileDrop]
+  );
   const handleClear = () => {
     if (ref.current == null) return;
     ref.current.value = "";
@@ -77,9 +94,13 @@ export const FileInput = ({
   return (
     <Flex direction="column" h="100%">
       <Flex direction="row">
-        <Box flexGrow={1}>
-          <FormLabel>Files</FormLabel>
-        </Box>
+        <FormLabel>Files</FormLabel>
+        {images.length > 0 && (
+          <Text fontSize="sm" color="gray.300">
+            {images.length} hình
+          </Text>
+        )}
+        <Spacer />
         {images && images.length > 0 && (
           <Button
             size="sm"
@@ -98,16 +119,16 @@ export const FileInput = ({
           value={""}
           multiple={multiple}
           onChange={handleChange}
-          accept="image/png"
+          accept="image/*"
           className="hidden"
         />
       </Box>
-      <Box flexGrow={1}>
+      <Box h={0} flex={1} overflow="auto">
         <FileDrop onDrop={handleFileDrop}>
           <Flex direction="row" flexWrap="wrap" mt={2}>
-            {images.map((image) => (
+            {images.map((image, index) => (
               <Box
-                key={image.name}
+                key={index}
                 w={32}
                 h={32}
                 position="relative"
@@ -123,21 +144,33 @@ export const FileInput = ({
                   src={image.data}
                   alt={image.name}
                 />
-                <Box position="absolute" bottom={1} left={1}>
-                  <Tag size="sm" fontSize={12} opacity={0.5}>
-                    {image.name}
-                  </Tag>
+                <Box position="absolute" bottom={1} left={1} right={1}>
+                  <Box w="100%">
+                    <Tag size="sm" fontSize={12} opacity={0.5}>
+                      <Tooltip label={image.name} aria-label={image.name}>
+                        <Text isTruncated>{image.name}</Text>
+                      </Tooltip>
+                    </Tag>
+                  </Box>
                 </Box>
                 <Box position="absolute" top={1} left={1}>
-                  {image.state === FileState.UPLOADING && (
-                    <Spinner color="blue.500" />
-                  )}
-                  {image.state === FileState.SUCCESS && (
-                    <Icon color="green.300" name="check-circle" />
-                  )}
-                  {image.state === FileState.FAIL && (
-                    <Icon color="yellow.500" name="warning-2" />
-                  )}
+                  <Box w="100%">
+                    {image.state === FileState.UPLOADING && (
+                      <Spinner color="blue.500" />
+                    )}
+                    {image.state === FileState.SUCCESS && (
+                      <Icon as={MdCheckCircle} color="green.500" />
+                    )}
+                    {image.state === FileState.FAIL && (
+                      <Tooltip
+                        shouldWrapChildren
+                        placement="top"
+                        label={image.err ? image.err.Err : "Có lỗi xãy ra"}
+                      >
+                        <Icon as={MdError} color="red.500" name="warning-2" />
+                      </Tooltip>
+                    )}
+                  </Box>
                 </Box>
                 <Box position="absolute" top={1} right={1}>
                   <IconButton
@@ -159,7 +192,9 @@ export const FileInput = ({
               cursor="pointer"
               onClick={() => ref.current?.click()}
             >
-              <Icon color="gray.200" w={16} h={16} name="add" margin="auto" />
+              <Center h="100%">
+                <AddIcon color="gray.200" w={16} h={16} />
+              </Center>
             </Flex>
           </Flex>
         </FileDrop>

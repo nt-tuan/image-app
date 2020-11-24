@@ -1,5 +1,5 @@
 import React from "react";
-import { imageAPI } from "resources/api";
+import { imageAPI, RequestError } from "resources/api";
 import { ImageInfo } from "resources/models";
 import { SelectTags } from "./Select";
 import { ImageContext } from "./ImageAdmin";
@@ -32,10 +32,15 @@ import {
   InputLeftAddon,
   Icon,
   VStack,
+  HStack,
+  Spinner,
+  Center,
 } from "@chakra-ui/react";
 import { MdHelp, MdDelete, MdClose } from "react-icons/md";
 import { useReactOidc } from "@axa-fr/react-oidc-context";
 import ReactCompareImage from "react-compare-image";
+import { User } from "oidc-client";
+import { ErrorAlert } from "components/ErrorAlert";
 export interface IImageEditor {
   image: ImageInfo;
   onClose: () => void;
@@ -46,20 +51,56 @@ interface ConfirmProps extends IconButtonProps {
   onConfirm: () => void;
   title?: string;
 }
+const LoadingAlertDialogBody = ({
+  loading,
+  title,
+  children,
+}: {
+  loading: boolean;
+  title: string;
+  children: React.ReactNode;
+}) => {
+  if (loading)
+    return (
+      <AlertDialogBody>
+        <Center>
+          <Spinner colorScheme="blue" />
+          {title}
+        </Center>
+      </AlertDialogBody>
+    );
+  return <AlertDialogBody>{children}</AlertDialogBody>;
+};
 const RenameConfirm = ({
   open,
-  oldPath,
+  image,
   newPath,
+  oidcUser,
   onConfirm,
   onClose,
 }: {
   open: boolean;
-  oldPath: string;
+  image: ImageInfo;
   newPath: string;
+  oidcUser: User;
   onConfirm: () => void;
   onClose: () => void;
 }) => {
   const ref = React.useRef<HTMLButtonElement>(null);
+  const [loading, setLoading] = React.useState(false);
+  const [err, setErr] = React.useState<RequestError>();
+  const handleConfirmRename = async () => {
+    try {
+      setLoading(true);
+      await imageAPI.rename(image.id, newPath, oidcUser.access_token);
+      onConfirm();
+    } catch (err) {
+      setErr(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <AlertDialog isOpen={open} onClose={onClose} leastDestructiveRef={ref}>
       <AlertDialogOverlay />
@@ -67,19 +108,30 @@ const RenameConfirm = ({
         <AlertDialogHeader fontSize="lg" fontWeight="bold">
           Bạn xác nhận muốn đổi hình đường dẫn hình ảnh này?
         </AlertDialogHeader>
-        <AlertDialogBody>
+        {err && (
+          <ErrorAlert
+            title="Đổi tên hình ảnh không thành công"
+            description={err.Err}
+            onClose={() => setErr(undefined)}
+          />
+        )}
+        <LoadingAlertDialogBody title="Đang cập nhật" loading={loading}>
           <Box color="red.500">
             <strong>Đường dẫn cũ: </strong>
-            {oldPath}
+            {image.fullname}
           </Box>
           <Box color="green.500">
             <strong>Đường dẫn mới: </strong>
             {newPath}
           </Box>
-        </AlertDialogBody>
-
+        </LoadingAlertDialogBody>
         <AlertDialogFooter>
-          <Button variant="ghost" onClick={onConfirm} ml={3}>
+          <Button
+            isLoading={loading}
+            variant="ghost"
+            onClick={handleConfirmRename}
+            ml={3}
+          >
             Xác nhận
           </Button>
           <Button variantColor="blue" ref={ref} onClick={onClose}>
@@ -93,15 +145,32 @@ const RenameConfirm = ({
 const ReplaceCofirm = ({
   image,
   file,
+  oidcUser,
   onClose,
   onConfirm,
 }: {
   image: ImageInfo;
   file?: File;
+  oidcUser: User;
   onClose: () => void;
   onConfirm: () => void;
 }) => {
+  const [loading, setLoading] = React.useState(false);
+  const [err, setErr] = React.useState<RequestError>();
   const ref = React.useRef<HTMLButtonElement>(null);
+  const handleConfirm = async () => {
+    if (file == null) return;
+    try {
+      setLoading(true);
+      await imageAPI.replace(image.id, file, oidcUser.access_token);
+      await imageAPI.purgeCache(image.id, oidcUser.access_token);
+      onConfirm();
+    } catch (err) {
+      setErr(err);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <AlertDialog
       isOpen={file != null}
@@ -113,7 +182,17 @@ const ReplaceCofirm = ({
         <AlertDialogHeader fontSize="lg" fontWeight="bold">
           Đổi hình ảnh
         </AlertDialogHeader>
-        <AlertDialogBody>
+        {err && (
+          <ErrorAlert
+            title="Đổi hình ảnh không thành công"
+            description={err.Err}
+            onClose={() => setErr(undefined)}
+          />
+        )}
+        <LoadingAlertDialogBody
+          loading={loading}
+          title="Đang thay đổi hình ảnh"
+        >
           Bạn có chắc chắn muốn đổi hình ảnh chứ?
           {file && (
             <ReactCompareImage
@@ -123,10 +202,9 @@ const ReplaceCofirm = ({
               rightImageLabel="Hình mới"
             />
           )}
-        </AlertDialogBody>
-
+        </LoadingAlertDialogBody>
         <AlertDialogFooter>
-          <Button variant="ghost" onClick={onConfirm} ml={3}>
+          <Button variant="ghost" onClick={handleConfirm} ml={3}>
             Xác nhận
           </Button>
           <Button variantColor="blue" ref={ref} onClick={onClose}>
@@ -155,7 +233,6 @@ const DeleteButton = ({ onConfirm, title, ...props }: ConfirmProps) => {
           <ModalBody>
             <Box>Bạn xác nhận xóa hình ảnh này?</Box>
           </ModalBody>
-
           <ModalFooter>
             <Button variant="ghost" onClick={handleConfirm}>
               Xác nhận
@@ -178,29 +255,32 @@ export const ImageEditor = (props: IImageEditor) => {
   const { oidcUser } = useReactOidc();
   const ctx = React.useContext(ImageContext);
   const ref = React.useRef<HTMLInputElement>(null);
+
   const handleFolderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFolder(e.target.value);
   };
-  const handleConfirmRename = () =>
-    imageAPI
-      .rename(props.image.id, folder, oidcUser.access_token)
-      .then(props.onChange)
-      .then(() => setConfirmRename(false))
-      .catch();
+  const handleConfirmRename = () => {
+    props.onChange();
+    setConfirmRename(false);
+  };
   const handleNotConfirmRename = () => {
     setConfirmRename(false);
     setFolder(props.image.fullname);
   };
-
-  const handleFilepathKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && props.image.fullname !== folder) {
+  const openConfirmRename = React.useCallback(() => {
+    if (props.image.fullname !== folder) {
       setConfirmRename(true);
     }
-  };
+  }, [props.image, folder]);
+  const handleFilepathKeyPress = React.useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        openConfirmRename();
+      }
+    },
+    [openConfirmRename]
+  );
   const handleReplaceFile = async () => {
-    if (replacedFile == null) return;
-    await imageAPI.replace(props.image.id, replacedFile, oidcUser.access_token);
-    await imageAPI.purgeCache(props.image.id, oidcUser.access_token);
     setReplacedFile(undefined);
     setImageKey(new Date().getTime());
     props.onChange();
@@ -244,101 +324,107 @@ export const ImageEditor = (props: IImageEditor) => {
     setTags(props.image.tags);
   }, [props]);
   return (
-    <Flex direction="column" h="100%" w="100%">
-      <Flex direction="row" pb={10}>
-        <Heading flexGrow={1} size="lg">
-          Update
-        </Heading>
-        <DeleteButton
-          mr={1}
-          size="sm"
-          icon={<MdDelete />}
-          color="red.500"
-          onConfirm={handleDelete}
-          aria-label="Delete"
-        />
-        <IconButton
-          size="sm"
-          icon={<MdClose />}
-          onClick={props.onClose}
-          aria-label="Close"
-        ></IconButton>
-      </Flex>
+    <>
       <RenameConfirm
-        oldPath={props.image.fullname}
+        image={props.image}
+        oidcUser={oidcUser}
         newPath={folder}
         open={confirmRename}
         onClose={handleNotConfirmRename}
         onConfirm={handleConfirmRename}
       />
-      <VStack>
-        <FormControl>
-          <FormLabel>File path</FormLabel>
-          <InputGroup>
-            <InputLeftAddon>./</InputLeftAddon>
-            <Input
-              roundedLeft={0}
-              type="text"
-              value={folder}
-              onChange={handleFolderChange}
-              onBlur={() => setConfirmRename(true)}
-              onKeyPress={handleFilepathKeyPress}
+      <Box display="none">
+        <input
+          ref={ref}
+          type="file"
+          multiple={false}
+          onChange={handleFileInputChange}
+          accept="image/png"
+        />
+      </Box>
+      <Flex direction="column" w="100%" h="100%" overflow="hidden">
+        <Flex direction="row">
+          <Heading flexGrow={1} size="lg">
+            Update
+          </Heading>
+          <HStack spacing={1}>
+            <DeleteButton
+              size="sm"
+              icon={<MdDelete />}
+              color="red.500"
+              onConfirm={handleDelete}
+              aria-label="Delete"
             />
-          </InputGroup>
-        </FormControl>
-        <Box cursor="pointer">
-          <Box color="gray.500" pt={2}>
-            <Icon mb={1} w={4} h={4} as={MdHelp} />
-            Click vào hình ảnh để đổi hình ảnh nhé
-          </Box>
-          <FileDrop onDrop={handleFileDrop}>
-            <ReplaceCofirm
-              onClose={() => setReplacedFile(undefined)}
-              onConfirm={handleReplaceFile}
-              file={replacedFile}
-              image={props.image}
+            <IconButton
+              size="sm"
+              icon={<MdClose />}
+              onClick={props.onClose}
+              aria-label="Close"
             />
-
-            <Box py={2}>
-              <Box
-                border="1px"
-                borderRadius="md"
-                borderColor="gray.500"
-                overflow="hidden"
-              >
-                <Image
-                  key={imageKey}
-                  minHeight={240}
-                  maxHeight={300}
-                  width="100%"
-                  objectFit="cover"
-                  onClick={openFileSelect}
-                  src={imageAPI.getPreviewLink(props.image)}
-                  alt={imageAPI.getPreviewLink(props.image)}
+          </HStack>
+        </Flex>
+        <Box flex={1} overflowY="auto">
+          <VStack pb={6} align="stretch" spacing={4}>
+            <FormControl>
+              <FormLabel>File path</FormLabel>
+              <InputGroup>
+                <InputLeftAddon>./</InputLeftAddon>
+                <Input
+                  roundedLeft={0}
+                  type="text"
+                  value={folder}
+                  onChange={handleFolderChange}
+                  onBlur={openConfirmRename}
+                  onKeyPress={handleFilepathKeyPress}
                 />
+              </InputGroup>
+            </FormControl>
+            <Box cursor="pointer">
+              <Box color="gray.500" pt={2}>
+                <Icon mb={1} w={4} h={4} as={MdHelp} mr={1} />
+                Click vào hình ảnh để đổi hình ảnh nhé
+              </Box>
+              <Box h={60}>
+                <ReplaceCofirm
+                  onClose={() => setReplacedFile(undefined)}
+                  onConfirm={handleReplaceFile}
+                  oidcUser={oidcUser}
+                  file={replacedFile}
+                  image={props.image}
+                />
+                <FileDrop onDrop={handleFileDrop}>
+                  <Box
+                    h={60}
+                    border="1px"
+                    borderRadius="md"
+                    borderColor="gray.500"
+                  >
+                    <Image
+                      key={imageKey}
+                      height="100%"
+                      width="100%"
+                      objectFit="cover"
+                      onClick={openFileSelect}
+                      src={imageAPI.getPreviewLink(props.image)}
+                      alt={imageAPI.getPreviewLink(props.image)}
+                    />
+                  </Box>
+                </FileDrop>
               </Box>
             </Box>
-          </FileDrop>
+
+            <FormControl>
+              <FormLabel>Tag</FormLabel>
+              <SelectTags
+                onAddTag={handleAddTag}
+                onRemoveTag={handleRemoveTag}
+                tags={Array.from(ctx.tags)}
+                selected={tags}
+              />
+            </FormControl>
+          </VStack>
         </Box>
-        <Box display="none">
-          <input
-            ref={ref}
-            type="file"
-            multiple={false}
-            onChange={handleFileInputChange}
-            accept="image/png"
-          />
-        </Box>
-        <FormControl>
-          <FormLabel>Tag</FormLabel>
-          <SelectTags
-            onAddTag={handleAddTag}
-            onRemoveTag={handleRemoveTag}
-            tags={Array.from(ctx.tags)}
-            selected={tags}
-          />
-        </FormControl>
-      </VStack>
-    </Flex>
+      </Flex>
+    </>
   );
 };

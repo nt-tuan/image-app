@@ -21,10 +21,18 @@ import {
   InputLeftAddon,
   HStack,
   VStack,
+  Wrap,
+  WrapItem,
 } from "@chakra-ui/react";
 import { ImageFullscreenButton } from "./ImageFullscreenButton";
 import { ImageTags } from "./ImageTags";
 import { ImageContext } from "./ImageAdmin";
+import {
+  ImageCreatedDate,
+  ImageCreator,
+  ImageDiskSize,
+  ImageSize,
+} from "./ImageListView";
 
 export interface IImageEditor {
   image: ImageInfo;
@@ -112,8 +120,8 @@ export const ImageDetail = (props: IImageEditor) => {
   const ctx = React.useContext(ImageContext);
   const { onCopy } = useClipboard(link);
   return (
-    <Flex direction="column" h="100%" w="100%">
-      <Flex direction="row" pb={6}>
+    <Flex direction="column" w="100%" h="100%">
+      <Flex direction="row" pb={10}>
         <Heading flexGrow={1} size="lg">
           Details
         </Heading>
@@ -133,56 +141,80 @@ export const ImageDetail = (props: IImageEditor) => {
           ></IconButton>
         </HStack>
       </Flex>
-      <VStack justify="stretch" spacing={4}>
-        <FormControl size="sm">
-          <FormLabel>File path</FormLabel>
-          <InputGroup>
-            <Input isReadOnly borderRightRadius={0} type="text" value={link} />
-            <InputRightAddon
-              onClick={onCopy}
-              cursor="pointer"
-              children={<MdContentCopy />}
-            />
-          </InputGroup>
-        </FormControl>
-        <Box w="100%">
-          <ResizePath image={props.image} />
-        </Box>
-        <FileDrop>
-          <Box>
-            <FormLabel>Hình ảnh</FormLabel>
-            <Box
-              border="1px"
-              borderRadius="md"
-              borderColor="gray.500"
-              overflow="hidden"
-            >
-              <Image
-                minHeight={240}
-                maxHeight={300}
-                width="100%"
-                objectFit="cover"
-                src={imageAPI.getPreviewLink(props.image)}
-                alt={imageAPI.getPreviewLink(props.image)}
-              />
+      <Box h={0} w="100%" flex={1} overflowY="auto" overflowX="hidden">
+        <VStack align="stretch" spacing={10} pb={6}>
+          <FileDrop>
+            <Box w="100%">
+              <FormLabel>Hình ảnh</FormLabel>
+              <Box
+                border="1px"
+                borderRadius="md"
+                borderColor="gray.500"
+                overflow="hidden"
+              >
+                <Image
+                  height={300}
+                  width="100%"
+                  objectFit="cover"
+                  src={imageAPI.getPreviewLink(props.image)}
+                  alt={imageAPI.getPreviewLink(props.image)}
+                />
+              </Box>
             </Box>
+          </FileDrop>
+          <Box>
+            <FormLabel>Thông số</FormLabel>
+            <Wrap spacing={4} justify="center">
+              <WrapItem>
+                <ImageSize {...props.image} />
+              </WrapItem>
+              <WrapItem>
+                <ImageDiskSize {...props.image} />
+              </WrapItem>
+              <WrapItem>
+                <ImageCreator {...props.image} />
+              </WrapItem>
+              <WrapItem>
+                <ImageCreatedDate {...props.image} />
+              </WrapItem>
+            </Wrap>
           </Box>
-        </FileDrop>
-        {props.image.tags && props.image.tags.length > 0 && (
-          <FormControl w="100%">
-            <FormLabel>Tags</FormLabel>
-            <ImageTags
-              tags={props.image.tags}
-              onClick={(tag) =>
-                ctx && ctx.selectedTags && ctx.setSelectedTags(new Set([tag]))
-              }
-            />
+          <FormControl size="sm">
+            <FormLabel>File path</FormLabel>
+            <InputGroup>
+              <Input
+                isReadOnly
+                borderRightRadius={0}
+                type="text"
+                value={link}
+              />
+              <InputRightAddon
+                onClick={onCopy}
+                cursor="pointer"
+                children={<MdContentCopy />}
+              />
+            </InputGroup>
           </FormControl>
-        )}
-        <Box w="100%">
-          <ImageHistories id={props.image.id} />
-        </Box>
-      </VStack>
+          <Box w="100%">
+            <ResizePath image={props.image} />
+          </Box>
+
+          {props.image.tags && props.image.tags.length > 0 && (
+            <FormControl w="100%">
+              <FormLabel>Tags</FormLabel>
+              <ImageTags
+                tags={props.image.tags}
+                onClick={(tag) =>
+                  ctx && ctx.selectedTags && ctx.setSelectedTags(new Set([tag]))
+                }
+              />
+            </FormControl>
+          )}
+          <Box w="100%">
+            <ImageHistories id={props.image.id} />
+          </Box>
+        </VStack>
+      </Box>
     </Flex>
   );
 };

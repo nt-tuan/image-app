@@ -109,7 +109,7 @@ export const ImageList = ({
   }
   return (
     <Flex direction="column" h="100%">
-      <Box flex={1} overflowY="auto">
+      <Box flex="1" overflowY="auto" px={4}>
         {translateImages.length === 0 && <Center>Không có hình ảnh nào</Center>}
         {translateImages.length !== 0 && viewMode === "grid" && (
           <ImagesGridView
@@ -126,13 +126,22 @@ export const ImageList = ({
           />
         )}
       </Box>
-      <Flex color="gray" fontSize="sm" direction="row" alignItems="center">
+      <Flex
+        bgColor="gray.700"
+        color="gray.100"
+        px={4}
+        fontSize="sm"
+        direction="row"
+        alignItems="center"
+      >
         <Box flex={1} isTruncated>
           Có {translateImages.length}/{total} hình ảnh được hiển thị
         </Box>
         <HStack>
           <HStack spacing={0}>
             <IconButton
+              _hover={{ color: "blue.500" }}
+              variant="ghost"
               icon={
                 sortDirection === "asc" ? (
                   <MdArrowUpward />
