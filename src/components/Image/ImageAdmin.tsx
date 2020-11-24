@@ -227,8 +227,10 @@ export const ImageHome = () => {
             bgColor="white"
             px={4}
             pt={6}
-            flexBasis={{ base: "100%", md: 450 }}
+            w="450px"
+            flexBasis={{ base: "100%", md: "450px" }}
             flexShrink={0}
+            flexGrow={0}
             boxShadow="lg"
           >
             {selected != null && selected.id === 0 && (

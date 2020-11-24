@@ -89,11 +89,12 @@ export const Trash = () => {
       {selected && (
         <Box
           minHeight="100%"
-          overflowY="scroll"
+          overflowY="auto"
           bgColor="white"
           px={4}
           py={6}
-          flexBasis={{ base: "100%", md: 450 }}
+          w="450px"
+          flexBasis={{ base: "100%", md: "450px" }}
           flexShrink={0}
           boxShadow="lg"
         >
