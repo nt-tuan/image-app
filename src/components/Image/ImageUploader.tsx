@@ -5,7 +5,7 @@ import {
   IFilePreivew,
 } from "components/Image/ImageInput";
 import { ImageInfo } from "resources/models";
-import { imageAPI } from "resources/api";
+import { imageAPI, RequestError } from "resources/api";
 import { MdClose, MdCheck } from "react-icons/md";
 import {
   Box,
@@ -16,6 +16,7 @@ import {
   Heading,
   IconButton,
   Input,
+  Spacer,
 } from "@chakra-ui/react";
 import { useReactOidc } from "@axa-fr/react-oidc-context";
 interface IImageUploader {
@@ -26,11 +27,15 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-const setFileDataState = (state: FileState, current: IFilePreivew) => {
+const setFileDataState = (
+  state: FileState,
+  current: IFilePreivew,
+  err?: RequestError
+) => {
   return (files: IFilePreivew[]) =>
     files.map((file) => {
       if (file.name === current.name) {
-        return { ...file, state };
+        return { ...file, err, state };
       }
       return file;
     });
@@ -50,6 +55,7 @@ export const ImageUploader = (props: IImageUploader) => {
       }
       for (var i = 0; i < fileDatas.length; i++) {
         const fileData = fileDatas[i];
+        if (fileData.state === FileState.SUCCESS) continue;
         const normalizeFolder = folder.trim();
         try {
           setFileDatas(setFileDataState(FileState.UPLOADING, fileData));
@@ -61,8 +67,8 @@ export const ImageUploader = (props: IImageUploader) => {
           props.onAdded(newImage);
           await sleep(4000);
           setFileDatas(setFileDataState(FileState.SUCCESS, fileData));
-        } catch {
-          setFileDatas(setFileDataState(FileState.FAIL, fileData));
+        } catch (err) {
+          setFileDatas(setFileDataState(FileState.FAIL, fileData, err));
         }
       }
     };
@@ -74,9 +80,10 @@ export const ImageUploader = (props: IImageUploader) => {
   return (
     <Flex direction="column" h="100%">
       <Flex direction="row" alignItems="baseline">
-        <Box flexGrow={1} pb={10}>
+        <Box pb={10}>
           <Heading size="lg">Upload</Heading>
         </Box>
+        <Spacer />
         <IconButton
           icon={<MdClose />}
           aria-label="Close"
@@ -84,17 +91,19 @@ export const ImageUploader = (props: IImageUploader) => {
           onClick={props.onClose}
         ></IconButton>
       </Flex>
-      <FormControl>
+
+      <FormControl pb={10}>
         <FormLabel>Folder</FormLabel>
         <Input type="text" onChange={handleFolderChange} />
       </FormControl>
-      <Box flexGrow={1}>
+      <Box h={0} flexGrow={1} overflowY="hidden" pb={10}>
         <FileInput
           multiple
           onChange={handleImagesChange}
           previewImages={fileDatas}
         />
       </Box>
+
       <Button leftIcon={<MdCheck />} onClick={handleSave}>
         Lưu
       </Button>

@@ -70,6 +70,7 @@ export const ImageSearch = <T extends SearchItem>({
       </InputLeftElement>
       <Input
         placeholder="Search..."
+        bgColor="white"
         value={contentQuery}
         onChange={handleInputChange}
       />

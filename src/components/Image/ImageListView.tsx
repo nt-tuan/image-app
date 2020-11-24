@@ -1,12 +1,12 @@
 import {
   Box,
   Flex,
-  Spacer,
   StackDivider,
   VStack,
   Icon,
   HStack,
   Avatar,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import React from "react";
 import {
@@ -24,6 +24,74 @@ interface Props {
   onSelect: (image: ImageListItemProps) => void;
   onTagSelect?: (tag: string) => void;
 }
+interface ItemProps {
+  image: ImageListItemProps;
+}
+// Create our number formatter.
+const formatter = new Intl.NumberFormat("vi-VN");
+export const ImageDiskSize = ({ diskSize }: { diskSize?: number }) => (
+  <>
+    {diskSize && (
+      <HStack spacing={1}>
+        <Icon as={MdStorage} />
+        <Box>{formatter.format(Math.floor(diskSize / 1000))}KB</Box>
+      </HStack>
+    )}
+  </>
+);
+export const ImageSize = ({
+  width,
+  height,
+}: {
+  width?: number;
+  height?: number;
+}) => (
+  <>
+    {width && height && (
+      <HStack spacing={1}>
+        <Icon as={MdPhotoSizeSelectActual} />
+        <Box>
+          {width} &times; {height}
+        </Box>
+      </HStack>
+    )}
+  </>
+);
+
+export const ImageCreator = ({ by }: { by?: string }) => (
+  <>
+    {by && (
+      <HStack spacing={1}>
+        <Avatar size="2xs" name={by} />
+        <Box>{by}</Box>
+      </HStack>
+    )}
+  </>
+);
+
+export const ImageCreatedDate = ({ at }: { at?: string }) => (
+  <>
+    {at && (
+      <HStack spacing={1}>
+        <Icon as={MdDateRange} />
+        <Moment fromNow>{at}</Moment>
+      </HStack>
+    )}
+  </>
+);
+
+const ImageMeta = ({ image }: ItemProps) => {
+  const visible = useBreakpointValue({ base: false, md: true });
+  return (
+    <HStack fontSize="sm" color="gray.400" spacing={3}>
+      <ImageSize {...image} />
+      <ImageDiskSize {...image} />
+      {visible && <ImageCreator {...image} />}
+      {visible && <ImageCreatedDate {...image} />}
+      {!image.at && !image.by && <Icon as={MdHelpOutline} />}
+    </HStack>
+  );
+};
 export const ImageListView = ({ images, onSelect, onTagSelect }: Props) => (
   <VStack
     divider={<StackDivider borderColor="gray.200" />}
@@ -33,19 +101,20 @@ export const ImageListView = ({ images, onSelect, onTagSelect }: Props) => (
     {images.map((image) => (
       <Flex
         key={image.id}
-        h={12}
         direction="row"
         cursor="pointer"
         _hover={{ bgColor: "gray.200" }}
         onClick={() => onSelect(image)}
+        py={1}
       >
-        <Box h={12} w={16} p={1}>
+        <Box h={12} w={16} py={1}>
           <Box
             w="100%"
             h="100%"
             border="1px"
             borderRadius="md"
             borderColor="gray.500"
+            overflow="hidden"
           >
             <LazyLoadImage
               key={image.id.toString()}
@@ -63,45 +132,14 @@ export const ImageListView = ({ images, onSelect, onTagSelect }: Props) => (
             />
           </Box>
         </Box>
-        <Flex direction="column" flex={1} pl={2}>
-          <Flex flex={1} w="100%" direction="row" alignItems="baseline">
-            <Box fontWeight="bold" fontSize="lg">
+        <Flex direction="column" w={0} flex={1} pl={2} justify="stretch">
+          <Flex flex={1} direction="row" alignItems="baseline" wrap="wrap">
+            <Box flex={1} fontWeight="bold" fontSize="lg">
               {image.fullname}
             </Box>
-            <Spacer />
             <ImageTags tags={image.tags} onClick={onTagSelect} />
           </Flex>
-          <Box fontSize="sm" color="gray.400">
-            <HStack spacing={3}>
-              {image.width && image.height && (
-                <HStack spacing={1}>
-                  <Icon as={MdPhotoSizeSelectActual} />
-                  <Box>
-                    {image.width} &times; {image.height}
-                  </Box>
-                </HStack>
-              )}
-              {image.diskSize && (
-                <HStack spacing={1}>
-                  <Icon as={MdStorage} />
-                  <Box>{image.diskSize}</Box>
-                </HStack>
-              )}
-              {image.by && (
-                <HStack spacing={1}>
-                  <Avatar size="2xs" name={image.by} />
-                  <Box>{image.by}</Box>
-                </HStack>
-              )}
-              {image.at && (
-                <HStack spacing={1}>
-                  <Icon as={MdDateRange} />
-                  <Moment fromNow>{image.at}</Moment>
-                </HStack>
-              )}
-              {!image.at && !image.by && <Icon as={MdHelpOutline} />}
-            </HStack>
-          </Box>
+          <ImageMeta image={image} />
         </Flex>
       </Flex>
     ))}
