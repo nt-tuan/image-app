@@ -35,7 +35,7 @@ function App() {
         <BrowserRouter>
           <Flex
             direction="column"
-            h="100vh"
+            h="100%"
             w="100%"
             overflow="hidden"
             bgColor="gray.100"

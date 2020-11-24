@@ -134,7 +134,13 @@ export const ImageListView = ({ images, onSelect, onTagSelect }: Props) => (
         </Box>
         <Flex direction="column" w={0} flex={1} pl={2} justify="stretch">
           <Flex flex={1} direction="row" alignItems="baseline" wrap="wrap">
-            <Box flex={1} fontWeight="bold" fontSize="lg">
+            <Box
+              maxWidth="100%"
+              flex={1}
+              wordBreak="break-all"
+              fontWeight="bold"
+              fontSize="lg"
+            >
               {image.fullname}
             </Box>
             <ImageTags tags={image.tags} onClick={onTagSelect} />
