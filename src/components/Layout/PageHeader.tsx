@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useLocation, matchPath, useHistory } from "react-router-dom";
+import { useLocation, matchPath, useHistory } from "react-router-dom";
 import { useReactOidc } from "@axa-fr/react-oidc-context";
 import Avatar from "react-avatar";
 import {
@@ -44,7 +44,7 @@ const UserMenu = () => {
       </MenuButton>
       <MenuList color="gray.700">
         <MenuItem>
-          <Link to={"https://id.my-shell.com/me"}> Quản lí tài khoản</Link>
+          <a href={"https://id.my-shell.com/me"}> Quản lí tài khoản</a>
         </MenuItem>
         <MenuItem onClick={() => logout()}>Đăng xuất</MenuItem>
       </MenuList>
