@@ -33,7 +33,7 @@ export const ImageSearch = <T extends SearchItem>({
   const { setInputText, setImages, setTags } = useSearchImage(onFiltered);
   const handleInputChange = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const query = e.target.value;
+      const query = e.target?.value ?? "";
       const tagExpress = query.match(searchByTagPattern);
       const tags =
         tagExpress && tagExpress.length > 0
