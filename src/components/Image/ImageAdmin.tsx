@@ -42,6 +42,7 @@ export const ImageHome = () => {
     new Set()
   );
   const [unauthorized, setUnauthorized] = React.useState(false);
+  const [err, setErr] = React.useState<RequestError>();
   React.useEffect(() => {
     imageAPI
       .get(oidcUser.access_token)
@@ -58,8 +59,10 @@ export const ImageHome = () => {
         setFiltered(images);
       })
       .catch((err: RequestError) => {
+        setErr(err);
         if (err === UnauthorizeError) {
           setUnauthorized(false);
+          return;
         }
       });
   }, [oidcUser]);
@@ -200,6 +203,7 @@ export const ImageHome = () => {
           </Flex>
           <Box w="100%" h={0} flex="1">
             <ImageList
+              err={err}
               onTagSelect={(tag) => setSelectedTags(new Set([tag]))}
               images={filtered?.map((image) => ({
                 ...image,

@@ -25,6 +25,8 @@ import {
   SortDirection,
   sortImages,
 } from "./ImageSorter";
+import { RequestError } from "resources/api";
+import { ErrorAlert } from "components/ErrorAlert";
 export interface ImageListItemProps {
   id: number;
   fullname: string;
@@ -37,6 +39,7 @@ export interface ImageListItemProps {
   tags: string[];
 }
 interface Props {
+  err?: RequestError;
   images?: ImageListItemProps[];
   total: number;
   onSelect: (image: ImageListItemProps) => void;
@@ -86,6 +89,7 @@ export const ImageList = ({
   onSelect,
   sortByOptions,
   onTagSelect,
+  err,
 }: Props) => {
   const [viewMode, setViewMode] = React.useState<"grid" | "list">("list");
   const [sortDirection, setSortDirection] = React.useState<SortDirection>(
@@ -100,6 +104,8 @@ export const ImageList = ({
       comparer[sortBy]
     );
   }, [images, sortBy, sortDirection]);
+  if (err != null)
+    return <ErrorAlert title="Đã có lỗi xãy ra" description={err.Err} />;
   if (translateImages == null) {
     return (
       <Flex w="100%" direction="column" alignItems="center">
