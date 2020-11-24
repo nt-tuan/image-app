@@ -147,6 +147,7 @@ export const ImageDetail = (props: IImageEditor) => {
             <Box w="100%">
               <FormLabel>Hình ảnh</FormLabel>
               <Box
+                w="100%"
                 border="1px"
                 borderRadius="md"
                 borderColor="gray.500"
@@ -157,7 +158,7 @@ export const ImageDetail = (props: IImageEditor) => {
                   width="100%"
                   objectFit="cover"
                   src={imageAPI.getPreviewLink(props.image)}
-                  alt={imageAPI.getPreviewLink(props.image)}
+                  alt={props.image.fullname}
                 />
               </Box>
             </Box>
