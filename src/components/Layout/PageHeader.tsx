@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useLocation, matchPath } from "react-router-dom";
+import { Link, useLocation, matchPath, useHistory } from "react-router-dom";
 import { useReactOidc } from "@axa-fr/react-oidc-context";
 import Avatar from "react-avatar";
 import {
@@ -10,13 +10,14 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
-  Link as UILink,
   HStack,
   useBreakpointValue,
+  Icon,
 } from "@chakra-ui/react";
-import { Icon } from "@chakra-ui/icons";
+
 import { MdKeyboardArrowDown, MdImage, MdRestore } from "react-icons/md";
 import { LogoIcon } from "./LogoIcon";
+import { IconType } from "react-icons";
 
 const UserMenu = () => {
   const visible = useBreakpointValue({ base: false, md: true });
@@ -24,8 +25,8 @@ const UserMenu = () => {
   if (oidcUser == null) return <Button variant="ghost">Đăng nhập</Button>;
   return (
     <Menu>
-      <MenuButton as={Box} alignSelf="center">
-        <Flex direction="row" justify="end" alignItems="center" h="100%" pr={2}>
+      <MenuButton as={Box} alignSelf="center" pr={2}>
+        <Flex direction="row" justify="end" alignItems="center" h="100%">
           <Avatar
             size="28"
             textSizeRatio={1.7}
@@ -58,8 +59,9 @@ const NavItem = ({
 }: {
   children: React.ReactNode;
   path: string;
-  icon: React.ReactElement;
+  icon: IconType;
 }) => {
+  const history = useHistory();
   const location = useLocation();
   const visible = useBreakpointValue({ base: false, md: true });
   const active = React.useMemo(() => {
@@ -67,18 +69,17 @@ const NavItem = ({
     return match && match.isExact;
   }, [location, path]);
   return (
-    <UILink
-      px={2}
+    <HStack
+      h="100%"
       fontSize="lg"
       color={active ? "white" : "blue.300"}
       fontWeight="bold"
-      href={path}
+      cursor="pointer"
+      onClick={() => history.push(path)}
     >
-      <HStack spacing={2}>
-        {icon}
-        {visible && <Box>{children}</Box>}
-      </HStack>
-    </UILink>
+      <Icon boxSize="24px" as={icon} />
+      {visible && <Box as="span">{children}</Box>}
+    </HStack>
   );
 };
 
@@ -87,26 +88,27 @@ export const PageHeader = () => {
     <Flex
       h={12}
       bg="blue.500"
-      pl={2}
       color="blue.100"
       direction="row"
       w="100%"
-      alignItems="baseline"
+      overflowX="hidden"
     >
-      <Flex direction="row" alignItems="baseline">
+      <Flex direction="row" alignItems="baseline" pl={4}>
         <LogoIcon color="blue.100" boxSize="32px" name="logo" />
-        <Box fontSize="2xl" fontWeight="bold" pl={1} pr={2}>
+        <Box fontSize="2xl" fontWeight="bold" pl={1} pr={8}>
           IMAGES
         </Box>
       </Flex>
-      <NavItem icon={<MdImage />} path="/app">
-        {" "}
-        Images
-      </NavItem>
-      <NavItem icon={<MdRestore />} path="/app/trash">
-        Trash
-      </NavItem>
-      <Flex flexGrow={1} alignSelf="baseline" alignItems="baseline"></Flex>
+      <HStack align="baseline" spacing={4}>
+        <NavItem icon={MdImage} path="/app">
+          {" "}
+          Images
+        </NavItem>
+        <NavItem icon={MdRestore} path="/app/trash">
+          Trash
+        </NavItem>
+      </HStack>
+      <Box w={0} flex={1} />
       <UserMenu />
     </Flex>
   );

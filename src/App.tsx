@@ -6,12 +6,11 @@ import { oidcConfiguration } from "resources/oidcConfiguration";
 import { NotAuthenticated as NotFound } from "pages/NotAuthenticated";
 import { NotAuthorized } from "pages/NotAuthorized";
 import { Switch, Route, BrowserRouter, Redirect } from "react-router-dom";
-import { Home } from "pages/Home";
 import { Login, RedirectLogin } from "pages/Login";
 import { Loading } from "pages/Loading";
-import { TrashPage } from "pages/Trash";
 import Moment from "react-moment";
 import "moment/locale/vi";
+import { ProtectedPages } from "pages/ProtectedPage";
 Moment.globalLocale = "vi";
 const theme = extendTheme({
   fonts: {
@@ -48,8 +47,7 @@ function App() {
               </Route>
               <Route path="/login" exact component={Login} />
               <Route path="/logout/callback" exact component={RedirectLogin} />
-              <Route path="/app" exact component={Home} />
-              <Route path="/app/trash" exact component={TrashPage} />
+              <Route path="/app" component={ProtectedPages} />
               <Route path="/404" exact component={NotFound} />
               <Route path="/">
                 <Redirect to="/login" />

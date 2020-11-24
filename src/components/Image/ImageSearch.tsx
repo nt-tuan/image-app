@@ -126,7 +126,8 @@ const useSearchImage = <T extends SearchItem>(
   onFiltered: (images: T[] | undefined) => void
 ) => {
   return useDebouncedSearch<T>((searchPattern, images, tags) => {
-    const normalizeSearchPattern = searchPattern.replace(normalizePattern, "");
+    const normalizeSearchPattern =
+      searchPattern?.replace(normalizePattern, "") ?? "";
     const filtered = images?.filter((image) => {
       const imageFullname = image.fullname.replace(normalizePattern, "");
       if (!imageFullname.match(normalizeSearchPattern)) return false;
