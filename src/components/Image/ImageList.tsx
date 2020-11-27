@@ -74,6 +74,7 @@ export const SortBySelect = ({
     icon={<MdSort />}
     value={value}
     variant="flushed"
+    color="gray.700"
     onChange={(event) => onChange(event.target.value as SortOptionValue)}
   >
     {options.map((op) => (
