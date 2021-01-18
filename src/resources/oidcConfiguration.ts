@@ -1,6 +1,5 @@
 import { UserManagerSettings } from "oidc-client";
 
-// const hydra = await Issuer.discover(`${process.env.REACT_APP_AUTH_URL}`);
 export const oidcConfiguration: UserManagerSettings = {
   client_id: process.env.REACT_APP_CLIENT_ID,
   redirect_uri: `${process.env.REACT_APP_URL}/callback`,
