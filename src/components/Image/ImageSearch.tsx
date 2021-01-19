@@ -169,23 +169,37 @@ const useSearchImage = <T extends SearchItem>(
         filteredItems: undefined,
       } as DebouceSearchResult<T>;
     }
-    const normalizeSearchPattern =
-      searchPattern?.replace(normalizePattern, "") ?? "";
-    const filteredItems = images?.filter((image) => {
-      const imageFullname = image.fullname.replace(normalizePattern, "");
-      if (
-        normalizeSearchPattern.length > 1 &&
-        !imageFullname.match(normalizeSearchPattern)
-      )
-        return false;
-      if (tags.length === 0) return true;
-      if (image.tags == null) return false;
-      return (
-        image.tags.filter((imageTag) => tags.includes(imageTag)).length >=
-        tags.length
-      );
-    });
-    return { searchPattern, newTags, filteredItems } as DebouceSearchResult<T>;
+    try {
+      const normalizeSearchPattern = new RegExp(searchPattern, "i");
+
+      const filteredItems = images?.filter((image) => {
+        const imageFullname = image.fullname;
+        if (searchPattern.length > 1) {
+          try {
+            if (!imageFullname.match(normalizeSearchPattern)) return false;
+          } catch {
+            return false;
+          }
+        }
+        if (tags.length === 0) return true;
+        if (image.tags == null) return false;
+        return (
+          image.tags.filter((imageTag) => tags.includes(imageTag)).length >=
+          tags.length
+        );
+      });
+      return {
+        searchPattern,
+        newTags,
+        filteredItems,
+      } as DebouceSearchResult<T>;
+    } catch {
+      return {
+        searchPattern,
+        newTags,
+        filteredItems: [],
+      } as DebouceSearchResult<T>;
+    }
   };
   return useDebouncedSearch<T>(images, tags, search);
 };

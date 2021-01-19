@@ -60,7 +60,6 @@ export const ImageHome = () => {
         var set = new Set(tags);
         setTags(set);
         setImages(images);
-        setFiltered(images);
       })
       .catch((err: RequestError) => {
         setErr(err);
