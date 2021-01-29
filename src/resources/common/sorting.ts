@@ -1,5 +1,10 @@
 export type SortDirection = "asc" | "desc";
-
+export type SortOptionValue =
+  | "filename"
+  | "at"
+  | "width"
+  | "height"
+  | "diskSize";
 export const getNumberComparer = (field: string) => (a: any, b: any) =>
   ((a[field] as number | undefined) ?? 0) -
   ((b[field] as number | undefined) ?? 0);

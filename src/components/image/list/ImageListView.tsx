@@ -16,9 +16,9 @@ import {
   MdDateRange,
 } from "react-icons/md";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { ImageListItemProps } from "./ImageList";
-import { ImageTags } from "../tag/ImageTags";
+import { ImageTags } from "components/tag/ImageTags";
 import Moment from "react-moment";
+import { ImageListItemProps } from "components/image/list/ItemProps";
 interface Props {
   images: ImageListItemProps[];
   onSelect: (image: ImageListItemProps) => void;

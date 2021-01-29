@@ -1,8 +1,8 @@
 import React from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Box, Flex, SimpleGrid } from "@chakra-ui/react";
-import { ImageTags } from "../tag/ImageTags";
-import { ImageListItemProps } from "./ImageList";
+import { ImageTags } from "components/tag/ImageTags";
+import { ImageListItemProps } from "components/image/list/ItemProps";
 interface Props {
   images: ImageListItemProps[];
   onSelect: (image: ImageListItemProps) => void;

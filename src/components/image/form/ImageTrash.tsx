@@ -4,12 +4,20 @@ import { ImageHistory } from "resources/models";
 import { Redirect } from "react-router-dom";
 import { useReactOidc } from "@axa-fr/react-oidc-context";
 import { imageAPI, RequestError, UnauthorizeError } from "resources/api";
-import { ImageList } from "./ImageList";
-import { ImageSearch, useDebouncedSearch } from "./ImageSearch";
-import { DeletedImageDetail } from "./DeletedImageDetail";
+import { ImageList } from "components/image/list/ImageList";
+import {
+  ImageSearch,
+  useDebouncedSearch,
+} from "components/image/form/ImageSearch";
+import { DeletedImageDetail } from "components/image/detail/DeletedImageDetail";
 import { LoadingConfirm } from "components/LoadingConfirm";
-import { ImageListFooter, SortOptionValue } from "./ImageListFooter";
-import { comparer, SortDirection, sortImages } from "./ImageSorter";
+import { ImageListFooter } from "components/image/list/ImageListFooter";
+import {
+  comparer,
+  SortDirection,
+  sortImages,
+  SortOptionValue,
+} from "resources/common/sorting";
 const emptySet = new Set<string>();
 export const Trash = () => {
   const { oidcUser } = useReactOidc();

@@ -1,5 +1,5 @@
 import React from "react";
-import { SimpleLayout } from "components/Layout2/SimpleLayout";
+import { SimpleLayout } from "components/layout/SimpleLayout";
 import { Button } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 

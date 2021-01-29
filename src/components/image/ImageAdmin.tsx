@@ -1,20 +1,28 @@
 import * as React from "react";
-import { ImageUploader } from "./ImageUploader";
+import { ImageUploader } from "components/image/form/ImageUploader";
 import { imageAPI, RequestError, UnauthorizeError } from "resources/api";
 import { ImageInfo } from "resources/models";
-import { ImageSearch, useDebouncedSearch } from "./ImageSearch";
-import { ImageList } from "./ImageList";
-import { ImageEditor } from "./ImageEditor";
+import {
+  ImageSearch,
+  useDebouncedSearch,
+} from "components/image/form/ImageSearch";
+import { ImageList } from "components/image/list/ImageList";
+import { ImageEditor } from "components/image/form/ImageEditor";
 import { useReactOidc } from "@axa-fr/react-oidc-context";
 import { Box, Button, Flex, Heading, IconButton } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { Redirect } from "react-router-dom";
-import { ImageDetail } from "./ImageDetail";
-import { ImageTags } from "../tag/ImageTags";
+import { ImageDetail } from "components/image/detail/ImageDetail";
+import { ImageTags } from "components/tag/ImageTags";
 import { MdClearAll } from "react-icons/md";
 import { normalizeName } from "resources/common/searching";
-import { ImageListFooter, SortOptionValue } from "./ImageListFooter";
-import { comparer, SortDirection, sortImages } from "./ImageSorter";
+import { ImageListFooter } from "components/image/list/ImageListFooter";
+import {
+  comparer,
+  SortDirection,
+  sortImages,
+  SortOptionValue,
+} from "resources/common/sorting";
 
 export const ImageContext = React.createContext<{
   tags: Set<string>;

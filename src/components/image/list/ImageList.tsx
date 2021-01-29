@@ -1,20 +1,11 @@
 import React from "react";
 import { Box, Center, Flex, Spinner } from "@chakra-ui/react";
-import { ImagesGridView } from "./ImageGridView";
-import { ImageListView } from "./ImageListView";
+import { ImagesGridView } from "components/image/list/ImageGridView";
+import { ImageListView } from "components/image/list/ImageListView";
 import { RequestError } from "resources/api";
 import { ErrorAlert } from "components/ErrorAlert";
-export interface ImageListItemProps {
-  id: number;
-  fullname: string;
-  href: string;
-  by?: string;
-  at?: string;
-  width?: number;
-  height?: number;
-  diskSize?: number;
-  tags: string[];
-}
+import { ImageListItemProps } from "components/image/list/ItemProps";
+
 interface Props {
   err?: RequestError;
   images?: ImageListItemProps[];

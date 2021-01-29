@@ -10,7 +10,7 @@ import React from "react";
 import { MdClose, MdRestore } from "react-icons/md";
 import { imageAPI } from "resources/api";
 import { ImageHistory } from "resources/models";
-import { ImageHistories } from "./ImageHistories";
+import { ImageHistories } from "components/image/ImageHistories";
 
 interface ViewProps {
   image: ImageHistory;

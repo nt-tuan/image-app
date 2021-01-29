@@ -14,8 +14,8 @@ import {
   MdArrowDownward,
   MdSort,
 } from "react-icons/md";
-import { SortDirection } from "./ImageSorter";
 import { RequestError } from "resources/api";
+import { SortDirection, SortOptionValue } from "resources/common/sorting";
 
 interface Props {
   err?: RequestError;
@@ -31,12 +31,7 @@ interface Props {
   viewMode: "grid" | "list";
   onViewModeChange: (value: "grid" | "list") => void;
 }
-export type SortOptionValue =
-  | "filename"
-  | "at"
-  | "width"
-  | "height"
-  | "diskSize";
+
 const optionText = {
   filename: "Theo đường dẫn",
   at: "Theo ngày tạo",

@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import { RequestError } from "resources/api";
-import { ErrorAlert } from "./ErrorAlert";
+import { ErrorAlert } from "components/ErrorAlert";
 
 const LoadingAlertDialogBody = ({
   loading,

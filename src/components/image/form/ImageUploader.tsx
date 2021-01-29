@@ -3,7 +3,7 @@ import {
   FileInput,
   FileState,
   IFilePreivew,
-} from "components/ImageTemp/ImageInput";
+} from "components/image/form/ImageInput";
 import { ImageInfo } from "resources/models";
 import { imageAPI, RequestError } from "resources/api";
 import { MdClose, MdCheck } from "react-icons/md";
