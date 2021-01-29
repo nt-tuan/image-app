@@ -34,3 +34,11 @@ export const sortImages = <T>(
   const factor = direction === "asc" ? 1 : -1;
   return images.sort((a, b) => func(a, b) * factor);
 };
+
+export const comparer = {
+  filename: fullnameComparer,
+  at: atComparer,
+  width: getNumberComparer("width"),
+  height: getNumberComparer("height"),
+  diskSize: getNumberComparer("diskSize"),
+};

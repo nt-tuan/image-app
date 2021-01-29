@@ -1,7 +1,7 @@
 import React from "react";
 import { imageAPI, RequestError } from "resources/api";
 import { ImageInfo } from "resources/models";
-import { SelectTags } from "./Select";
+import { SelectTags } from "../tag/Select";
 import { ImageContext } from "./ImageAdmin";
 import { FileDrop } from "react-file-drop";
 import {

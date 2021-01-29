@@ -5,7 +5,7 @@ export const oidcConfiguration: UserManagerSettings = {
   redirect_uri: `${process.env.REACT_APP_URL}/callback`,
   response_type: "code",
   post_logout_redirect_uri: `${process.env.REACT_APP_URL}/logout/callback`,
-  scope: "openid profile offline user.read image.read image.write",
+  scope: "openid profile offline user.read image.read image.write image.delete",
   authority: process.env.REACT_APP_AUTH_URL,
   silent_redirect_uri: `${process.env.REACT_APP_URL}/authentication/silent_callback`,
   automaticSilentRenew: true,

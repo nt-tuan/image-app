@@ -17,7 +17,7 @@ import {
 } from "react-icons/md";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { ImageListItemProps } from "./ImageList";
-import { ImageTags } from "./ImageTags";
+import { ImageTags } from "../tag/ImageTags";
 import Moment from "react-moment";
 interface Props {
   images: ImageListItemProps[];
@@ -143,7 +143,7 @@ export const ImageListView = ({ images, onSelect, onTagSelect }: Props) => (
             >
               {image.fullname}
             </Box>
-            <ImageTags tags={image.tags} onClick={onTagSelect} />
+            <ImageTags tags={new Set(image.tags)} onClick={onTagSelect} />
           </Flex>
           <ImageMeta image={image} />
         </Flex>

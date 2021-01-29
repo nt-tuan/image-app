@@ -3,7 +3,7 @@ import { imageAPI } from "resources/api";
 import { ImageInfo } from "resources/models";
 import { FileDrop } from "react-file-drop";
 import { MdEdit, MdClose, MdContentCopy } from "react-icons/md";
-import { ImageHistories } from "components/Image/ImageHistories";
+import { ImageHistories } from "components/ImageTemp/ImageHistories";
 import {
   Box,
   Flex,
@@ -25,7 +25,7 @@ import {
   WrapItem,
 } from "@chakra-ui/react";
 import { ImageFullscreenButton } from "./ImageFullscreenButton";
-import { ImageTags } from "./ImageTags";
+import { ImageTags } from "../tag/ImageTags";
 import { ImageContext } from "./ImageAdmin";
 import {
   ImageCreatedDate,
@@ -204,7 +204,7 @@ export const ImageDetail = (props: IImageEditor) => {
             <FormControl w="100%">
               <FormLabel>Tags</FormLabel>
               <ImageTags
-                tags={props.image.tags}
+                tags={new Set(props.image.tags)}
                 onClick={(tag) =>
                   ctx && ctx.selectedTags && ctx.setSelectedTags(new Set([tag]))
                 }
