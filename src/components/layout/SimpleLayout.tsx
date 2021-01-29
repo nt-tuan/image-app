@@ -1,5 +1,5 @@
 import { Flex, Heading } from "@chakra-ui/react";
-import { LogoIcon } from "components/Layout/LogoIcon";
+import { LogoIcon } from "components/layout/LogoIcon";
 import React from "react";
 interface Props {
   title?: string;

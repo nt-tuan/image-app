@@ -1,6 +1,6 @@
 import { useReactOidc } from "@axa-fr/react-oidc-context";
 import { Box, Button } from "@chakra-ui/react";
-import { SimpleLayout } from "components/Layout/SimpleLayout";
+import { SimpleLayout } from "components/layout/SimpleLayout";
 import React from "react";
 
 export const NotAuthorized = () => {

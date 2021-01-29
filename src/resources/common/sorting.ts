@@ -1,5 +1,10 @@
 export type SortDirection = "asc" | "desc";
-
+export type SortOptionValue =
+  | "filename"
+  | "at"
+  | "width"
+  | "height"
+  | "diskSize";
 export const getNumberComparer = (field: string) => (a: any, b: any) =>
   ((a[field] as number | undefined) ?? 0) -
   ((b[field] as number | undefined) ?? 0);
@@ -33,4 +38,12 @@ export const sortImages = <T>(
 ) => {
   const factor = direction === "asc" ? 1 : -1;
   return images.sort((a, b) => func(a, b) * factor);
+};
+
+export const comparer = {
+  filename: fullnameComparer,
+  at: atComparer,
+  width: getNumberComparer("width"),
+  height: getNumberComparer("height"),
+  diskSize: getNumberComparer("diskSize"),
 };

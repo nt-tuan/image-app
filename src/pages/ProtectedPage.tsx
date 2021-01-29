@@ -1,8 +1,8 @@
 import React from "react";
-import { PageHeader } from "components/Layout/PageHeader";
+import { PageHeader } from "components/layout/PageHeader";
 import { Route, Switch } from "react-router-dom";
-import { ImageHome } from "components/Image/ImageAdmin";
-import { Trash } from "components/Image/ImageTrash";
+import { ImageHome } from "components/image/ImageAdmin";
+import { Trash } from "components/image/form/ImageTrash";
 import { withOidcSecure } from "@axa-fr/react-oidc-context";
 import { Box } from "@chakra-ui/react";
 const Pages = () => {

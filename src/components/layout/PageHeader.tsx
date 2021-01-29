@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 
 import { MdKeyboardArrowDown, MdImage, MdRestore } from "react-icons/md";
-import { LogoIcon } from "./LogoIcon";
+import { LogoIcon } from "components/layout/LogoIcon";
 import { IconType } from "react-icons";
 
 const UserMenu = () => {

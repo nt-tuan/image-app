@@ -1,5 +1,5 @@
 import React from "react";
-import "./App.css";
+import "App.css";
 import { ChakraProvider, CSSReset, Flex, extendTheme } from "@chakra-ui/react";
 import { AuthenticationProvider } from "@axa-fr/react-oidc-context";
 import { oidcConfiguration } from "resources/oidcConfiguration";

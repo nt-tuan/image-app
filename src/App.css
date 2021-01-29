@@ -1,7 +1,3 @@
-@font-face {
-  font-family: myFont;
-  src: url("fonts/BeVietnam-Regular.ttf");
-}
 body {
   margin: 0;
   font-family: myFont, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
