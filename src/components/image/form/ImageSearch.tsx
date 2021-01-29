@@ -88,7 +88,6 @@ const searchFunction = <T extends SearchItem>(
     if (!hasTags(image, filteredTags)) return false;
     if (conditions.regexp == null) return true;
     const normalizedFullname = normalizePath(image.fullname);
-    console.log(normalizedFullname, conditions.regexp);
     const match = normalizedFullname.match(conditions.regexp);
     return match != null;
   });
